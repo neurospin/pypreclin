@@ -14,8 +14,8 @@ import subprocess
 from pypreclin.utils.export import ungzip_file
 from pypreclin.utils.export import gzip_file
 from pypreclin import preproc
-from pyfsl.utils.filetools import apply_mask
-from pyfsl import DEFAULT_FSL_PATH
+from pyconnectome.utils.filetools import apply_mask
+from pyconnectome import DEFAULT_FSL_PATH
 
 
 def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
