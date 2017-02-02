@@ -89,9 +89,23 @@ from pyconnectomist.utils.pdftools import generate_pdf
 # Nipype import
 from nipype.interfaces import fsl
 
-
 # Parameters to keep trace
 __hopla__ = ["tool", "version", "runtime", "inputs", "outputs"]
+
+
+# Global parameters
+STEPS = {
+    "slice_timing": "0-SliceTiming",
+    "reorient": "1-Reorient",
+    "realign": "2-Realign",
+    "normalization": "3-Normalization",
+    "inhomogeneities": "4-Inhomogeneities",
+    "coregistration": "5-Coregistration",
+    "wrap": "6-Wrap",
+    "smooth": "7-Smooth",
+    "snaps": "8-Snaps",
+    "repor": "9-Report"
+}
 
 
 # Script documentation
@@ -127,6 +141,8 @@ python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -t /volatile/nsap/monkey/reference/mni-resampled_1by1by1.nii \
     -na RAS \
     -nf RIA \
+    -k 3 \
+    -c /etc/fsl/5.0/fsl.sh \
     -j /home/ag239446/local/jip-Linux-x86_64/bin
 
 python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
@@ -238,6 +254,11 @@ parser.add_argument("-ta", "--anatbrainthres",
                     metavar="<brain thres>",
                     help=("the threshold used to extract the brain in the "
                           "anatomical image."))
+parser.add_argument("-k", "--kernelsize",
+                    type=float,
+                    default=3.,
+                    metavar="<smooth kernel size>",
+                    help="the smoothing kernel size in mm.")
 parser.add_argument("-j", "--jipdir",
                     type=is_directory,
                     required=True,
@@ -280,6 +301,7 @@ sid = args.sid
 anatfile = args.anatfile
 funcfile = args.funcfile
 tr = args.repetitiontime
+kernel_size = args.kernelsize
 anatbrainthres = args.anatbrainthres
 template = args.template
 subjdir = os.path.join(outdir, sid)
@@ -298,7 +320,7 @@ if not os.path.isdir(subjdir):
 """
 Slice timing
 """
-st_dir = os.path.join(subjdir, "0-SliceTiming")
+st_dir = os.path.join(subjdir, STEPS["slice_timing"])
 if not os.path.isdir(st_dir):
     os.mkdir(st_dir)
 interface = fsl.SliceTimer()
@@ -315,14 +337,13 @@ slice_time_corrected_file = st_outputs["slice_time_corrected_file"]
 if args.verbose > 0:
     print("[result] Slice time corrected functional: {0}.".format(
         slice_time_corrected_file))
-    print("[result] Reoriented anatomical: {0}.".format(standard_anatfile))
 
 
 """
 Reorient images not in RAS coordinate system and
 reorient images to match the orientation of the standard MNI152 template.
 """
-reorient_dir = os.path.join(subjdir, "1-Reorient")
+reorient_dir = os.path.join(subjdir, STEPS["reorient"])
 if not os.path.isdir(reorient_dir):
     os.mkdir(reorient_dir)
 reoriented_funcfile = slice_time_corrected_file
@@ -360,7 +381,7 @@ if args.verbose > 0:
 """
 Realign
 """
-realign_dir = os.path.join(subjdir, "2-Realign")
+realign_dir = os.path.join(subjdir, STEPS["realign"])
 if not os.path.isdir(realign_dir):
     os.mkdir(realign_dir)
 realign_func_rootfile = os.path.join(
@@ -372,7 +393,7 @@ realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
     bins=256,
     dof=12,
     reg_to_mean=True,
-    mats=False,
+    mats=True,
     plots=True,
     verbose=args.verbose,
     shfile=fsl_config)
@@ -384,7 +405,7 @@ if args.verbose > 0:
 """
 Normalization.
 """
-normalization_dir = os.path.join(subjdir, "3-Normalization")
+normalization_dir = os.path.join(subjdir, STEPS["normalization"])
 if not os.path.isdir(normalization_dir):
     os.mkdir(normalization_dir)
 (register_anatfile, register_anat_maskfile,
@@ -407,7 +428,7 @@ if args.verbose > 0:
 """
 Tissues segmentation and spatial intensity variations correction.
 """
-inhomogeneities_dir = os.path.join(subjdir, "4-Inhomogeneities")
+inhomogeneities_dir = os.path.join(subjdir, STEPS["inhomogeneities"])
 if not os.path.isdir(inhomogeneities_dir):
     os.mkdir(inhomogeneities_dir)
 fast_fileroot = os.path.join(
@@ -433,7 +454,7 @@ if args.verbose > 0:
 """
 Coregistration.
 """
-coregistration_dir = os.path.join(subjdir, "5-Coregistration")
+coregistration_dir = os.path.join(subjdir, STEPS["coregistration"])
 if not os.path.isdir(coregistration_dir):
     os.mkdir(coregistration_dir)
 (register_func_meanfile, register_func_mean_maskfile,
@@ -456,7 +477,7 @@ if args.verbose > 0:
 """
 Wrap functional: resample the functional serie and mask the registered serie.
 """
-wrap_dir = os.path.join(subjdir, "6-Wrap")
+wrap_dir = os.path.join(subjdir, STEPS["wrap"])
 if not os.path.isdir(wrap_dir):
     os.mkdir(wrap_dir)
 deformed_files = apply_jip_align(
@@ -480,9 +501,31 @@ if args.verbose > 0:
 
 
 """
+Smooth the functional serie.
+"""
+smooth_dir = os.path.join(subjdir, STEPS["smooth"])
+if not os.path.isdir(smooth_dir):
+    os.mkdir(smooth_dir)
+interface = fsl.Smooth()
+returncode = interface.run(
+    in_file=register_func_maskfile,
+    fwhm=kernel_size,
+    output_type="NIFTI",
+    smoothed_file=os.path.join(
+        smooth_dir,
+        "smooth_" + os.path.basename(register_func_maskfile).split(".")[0] +
+        ".nii"))
+smooth_outputs = returncode.outputs.get()
+smoothed_file = smooth_outputs["smoothed_file"]
+if args.verbose > 0:
+    print("[result] Smoothed functional: {0}.".format(smoothed_file))
+os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
+
+
+"""
 Compute some snaps assessing the different processing steps.
 """
-snapdir = os.path.join(subjdir, "7-Snaps")
+snapdir = os.path.join(subjdir, STEPS["snaps"])
 if not os.path.isdir(snapdir):
     os.mkdir(snapdir)
 # > generate QA on functional time serie
@@ -547,7 +590,7 @@ if args.verbose > 0:
 """
 Generate a QC reporting
 """
-reportdir = os.path.join(subjdir, "8-Report")
+reportdir = os.path.join(subjdir, STEPS["report"])
 if not os.path.isdir(reportdir):
     os.mkdir(reportdir)
 reportfile = os.path.join(reportdir, "QC_preproc_{0}.pdf".format(sid))
