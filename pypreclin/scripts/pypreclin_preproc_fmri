@@ -29,6 +29,8 @@ try:
     bredala.register("pypreclin.preproc.register",
                      names=["jip_align",
                             "apply_jip_align"])
+    bredala.register("pypreclin.preproc.undist",
+                     names=["mc_undist"])
     bredala.register("pypreclin.utils.export",
                      names=["gzip_and_update_outputs",
                             "export_interface_results"])
@@ -61,6 +63,7 @@ from pypreclin import DEFAULT_FSL_PATH
 from pypreclin.utils.reorient import reorient_image
 from pypreclin.preproc.register import jip_align
 from pypreclin.preproc.register import apply_jip_align
+from pypreclin.preproc.undist import mc_undist
 
 # PyPreProcess import
 from pypreprocess import __version__ as pypreprocess_version
@@ -97,14 +100,15 @@ __hopla__ = ["tool", "version", "runtime", "inputs", "outputs"]
 STEPS = {
     "slice_timing": "0-SliceTiming",
     "reorient": "1-Reorient",
-    "realign": "2-Realign",
-    "normalization": "3-Normalization",
-    "inhomogeneities": "4-Inhomogeneities",
-    "coregistration": "5-Coregistration",
-    "wrap": "6-Wrap",
-    "smooth": "7-Smooth",
-    "snaps": "8-Snaps",
-    "repor": "9-Report"
+    "undist": "2-Undist",
+    "realign": "3-Realign",
+    "normalization": "4-Normalization",
+    "inhomogeneities": "5-Inhomogeneities",
+    "coregistration": "6-Coregistration",
+    "wrap": "7-Wrap",
+    "smooth": "8-Smooth",
+    "snaps": "9-Snaps",
+    "report": "10-Report"
 }
 
 
@@ -143,7 +147,9 @@ python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -nf RIA \
     -k 3 \
     -c /etc/fsl/5.0/fsl.sh \
-    -j /home/ag239446/local/jip-Linux-x86_64/bin
+    -j /home/ag239446/local/jip-Linux-x86_64/bin \
+    -p /i2bm/local/spm12/ \
+    -u
 
 python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -v 2 \
@@ -210,6 +216,9 @@ parser.add_argument("-v", "--verbose",
 parser.add_argument("-e", "--erase",
                     action="store_true",
                     help="if set, clean the subject destination folder.")
+parser.add_argument("-u", "--undist",
+                    action="store_true",
+                    help="if set, use slice by slice undist correction.")
 parser.add_argument("-f", "--funcfile",
                     required=True,
                     type=is_file,
@@ -268,6 +277,10 @@ parser.add_argument("-c", "--fslconfig",
                     type=is_file,
                     metavar="<fsl config>",
                     help="the FSL configuration script.")
+parser.add_argument("-p", "--spmpath",
+                    type=is_directory,
+                    metavar="<spm path>",
+                    help="the SPM path.")
 args = parser.parse_args()
 
 
@@ -301,6 +314,8 @@ sid = args.sid
 anatfile = args.anatfile
 funcfile = args.funcfile
 tr = args.repetitiontime
+spmpath = args.spmpath
+undist = args.undist
 kernel_size = args.kernelsize
 anatbrainthres = args.anatbrainthres
 template = args.template
@@ -309,7 +324,7 @@ params = locals()
 inputs = dict([(name, params[name])
                for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
                             "template", "anatorient", "funcorient", "subjdir",
-                            "anatbrainthres")])
+                            "anatbrainthres", "undist", "spmpath")])
 outputs = None
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
@@ -379,15 +394,33 @@ if args.verbose > 0:
 
 
 """
+Undist
+"""
+if undist:
+    undist_dir = os.path.join(subjdir, STEPS["undist"])
+    if not os.path.isdir(undist_dir):
+        os.mkdir(undist_dir)
+    undist_funcfile = mc_undist(
+        funcfile=standard_funcfile,
+        outdir=undist_dir,
+        spmpath=spmpath,
+        fslpath=fsl_config)
+else:
+    undist_funcfile = standard_funcfile
+if args.verbose > 0:
+    print("[result] Undist functional: {0}.".format(undist_funcfile))
+
+
+"""
 Realign
 """
 realign_dir = os.path.join(subjdir, STEPS["realign"])
 if not os.path.isdir(realign_dir):
     os.mkdir(realign_dir)
 realign_func_rootfile = os.path.join(
-    realign_dir, "r" + os.path.basename(standard_funcfile).split(".")[0])
+    realign_dir, "r" + os.path.basename(undist_funcfile).split(".")[0])
 realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
-    in_file=standard_funcfile,
+    in_file=undist_funcfile,
     out_fileroot=realign_func_rootfile,
     cost="normcorr",
     bins=256,
@@ -519,6 +552,8 @@ smooth_outputs = returncode.outputs.get()
 smoothed_file = smooth_outputs["smoothed_file"]
 if args.verbose > 0:
     print("[result] Smoothed functional: {0}.".format(smoothed_file))
+if os.path.islink(os.path.join(subjdir, "sMNI.nii")):
+    os.remove(os.path.join(subjdir, "sMNI.nii"))
 os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
 
 
