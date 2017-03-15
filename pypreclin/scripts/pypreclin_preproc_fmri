@@ -281,6 +281,14 @@ parser.add_argument("-p", "--spmpath",
                     type=is_directory,
                     metavar="<spm path>",
                     help="the SPM path.")
+parser.add_argument("-n", "--normalization_trf",
+                    type=is_file,
+                    metavar="<jip normalization trf>",
+                    help="the JIP normalization align.com file.")
+parser.add_argument("-m", "--coregistration_trf",
+                    type=is_file,
+                    metavar="<jip coregistration trf>",
+                    help="the JIP coregistration align.com file.")
 args = parser.parse_args()
 
 
@@ -320,11 +328,14 @@ kernel_size = args.kernelsize
 anatbrainthres = args.anatbrainthres
 template = args.template
 subjdir = os.path.join(outdir, sid)
+normalization_trf = args.normalization_trf
+coregistration_trf = args.coregistration_trf
 params = locals()
 inputs = dict([(name, params[name])
                for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
                             "template", "anatorient", "funcorient", "subjdir",
-                            "anatbrainthres", "undist", "spmpath")])
+                            "anatbrainthres", "undist", "spmpath",
+                            "normalization_trf", "coregistration_trf")])
 outputs = None
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
@@ -441,6 +452,8 @@ Normalization.
 normalization_dir = os.path.join(subjdir, STEPS["normalization"])
 if not os.path.isdir(normalization_dir):
     os.mkdir(normalization_dir)
+if normalization_trf is not None:
+    shutil.copy(normalization_trf, normalization_dir)
 (register_anatfile, register_anat_maskfile,
  native_anat_maskfile, align_normfile) = jip_align(
     source_file=standard_anatfile,
@@ -490,6 +503,8 @@ Coregistration.
 coregistration_dir = os.path.join(subjdir, STEPS["coregistration"])
 if not os.path.isdir(coregistration_dir):
     os.mkdir(coregistration_dir)
+if coregistration_trf is not None:
+    shutil.copy(coregistration_trf, coregistration_dir)
 (register_func_meanfile, register_func_mean_maskfile,
  native_func_mean_maskfile, align_coregfile) = jip_align(
     source_file=realign_func_meanfile,
