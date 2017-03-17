@@ -160,6 +160,7 @@ def apply_jip_align(apply_to_files, align_with, outdir, jipdir, prefix="w",
     else:
         batch = os.path.join(os.path.dirname(preproc.__file__), "resources",
                              "apply_nonlin.com")
+    batch = os.path.abspath(batch)
 
     # Create jip environment
     jip_envriron = os.environ
