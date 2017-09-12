@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2013 - 2016
+# NSAp - Copyright (C) CEA, 2013 - 2017
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
@@ -18,6 +18,8 @@ import pickle
 import json
 import glob
 from datetime import datetime
+import textwrap
+from argparse import RawTextHelpFormatter
 
 # Bredala import
 try:
@@ -28,7 +30,8 @@ try:
                             "reorient_image"])
     bredala.register("pypreclin.preproc.register",
                      names=["jip_align",
-                            "apply_jip_align"])
+                            "apply_jip_align",
+                            "timeserie_to_reference"])
     bredala.register("pypreclin.preproc.undist",
                      names=["mc_undist"])
     bredala.register("pypreclin.utils.export",
@@ -63,6 +66,7 @@ from pypreclin import DEFAULT_FSL_PATH
 from pypreclin.utils.reorient import reorient_image
 from pypreclin.preproc.register import jip_align
 from pypreclin.preproc.register import apply_jip_align
+from pypreclin.preproc.register import timeserie_to_reference
 from pypreclin.preproc.undist import mc_undist
 
 # PyPreProcess import
@@ -98,17 +102,18 @@ __hopla__ = ["tool", "version", "runtime", "inputs", "outputs"]
 
 # Global parameters
 STEPS = {
-    "slice_timing": "0-SliceTiming",
-    "reorient": "1-Reorient",
-    "undist": "2-Undist",
-    "realign": "3-Realign",
-    "normalization": "4-Normalization",
-    "inhomogeneities": "5-Inhomogeneities",
-    "coregistration": "6-Coregistration",
-    "wrap": "7-Wrap",
-    "smooth": "8-Smooth",
-    "snaps": "9-Snaps",
-    "report": "10-Report"
+    "slice_timing": "1-SliceTiming",
+    "warp": "2-B0Inhomogeneities",
+    "reorient": "3-Reorient",
+    "undist": "4-Undist",
+    "realign": "5-Realign",
+    "normalization": "6-Normalization",
+    "inhomogeneities": "7-Inhomogeneities",
+    "coregistration": "8-Coregistration",
+    "wrap": "9-Wrap",
+    "smooth": "10-Smooth",
+    "snaps": "11-Snaps",
+    "report": "12-Report"
 }
 
 
@@ -119,8 +124,10 @@ fMRI preprocessings
 
 Preprocessed a fMRI dataset.
 
-Steps:
+Steps
+-----
 
+0- Slice Timing correction.
 1- Reorient images not in RAS coordinate system and reorient images to match
    the orientation of the standard MNI152 template.
 2- Realign: motion correction - adjust for movement between slices.
@@ -133,7 +140,8 @@ Steps:
 7- SNAPs: compute some snaps assessing the different processing steps.
 8- Reporting: generate a QC reporting.
 
-Command:
+Commands
+--------
 
 python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -v 2 \
@@ -206,7 +214,46 @@ class Range(object):
         return "{0}-{1}".format(self.start, self.end)
 
 
-parser = argparse.ArgumentParser(description=doc)
+parser = argparse.ArgumentParser(
+        description=textwrap.dedent(doc),
+        formatter_class=RawTextHelpFormatter)
+
+required = parser.add_argument_group("required arguments")
+required.add_argument("-f", "--funcfile",
+                    required=True,
+                    type=is_file,
+                    metavar="<funcfile>",
+                    help="path to the fMRI Nifti file.")
+required.add_argument("-a", "--anatfile",
+                    required=True,
+                    type=is_file,
+                    metavar="<anatfile>",
+                    help="path to the anatomical Nifti file.")
+required.add_argument("-s", "--sid",
+                    required=True,
+                    metavar="<subject id>",
+                    help="the subject identifier.")
+required.add_argument("-o", "--outdir",
+                    required=True,
+                    metavar="<outdir>",
+                    help=("the detination folder where the data will be "
+                          "generated."))
+required.add_argument("-r", "--repetitiontime",
+                    type=float,
+                    required=True,
+                    metavar="<repetition time>",
+                    help="the repetition time.")
+required.add_argument("-t", "--template",
+                    type=is_file,
+                    required=True,
+                    metavar="<path template>",
+                    help="the path to the template image.")
+required.add_argument("-j", "--jipdir",
+                    type=is_directory,
+                    required=True,
+                    metavar="<jip path>",
+                    help="the jip binary path.")
+
 parser.add_argument("-v", "--verbose",
                     type=int,
                     choices=[0, 1, 2],
@@ -216,38 +263,24 @@ parser.add_argument("-v", "--verbose",
 parser.add_argument("-e", "--erase",
                     action="store_true",
                     help="if set, clean the subject destination folder.")
+parser.add_argument("-w", "--warp",
+                    action="store_true",
+                    help="if set, use a non linear registration to remove "
+                         "B0 first and second orders approximation "
+                         "inhomogeneities artifacts.")
+parser.add_argument("-wn", "--warp-njobs",
+                    type=int, default=1,
+                    help="the number of jobs running in parallel during the "
+                         "the B0 inhomogeneities correction.")
+parser.add_argument("-wi", "--warp-index",
+                    type=int, default=0,
+                    help="if the '-w' option is set, use this parameter to "
+                         "specify the refenrece volume index in the "
+                         "timeserie.")
 parser.add_argument("-u", "--undist",
                     action="store_true",
-                    help="if set, use slice by slice undist correction.")
-parser.add_argument("-f", "--funcfile",
-                    required=True,
-                    type=is_file,
-                    metavar="<funcfile>",
-                    help="path to the fMRI Nifti file.")
-parser.add_argument("-a", "--anatfile",
-                    required=True,
-                    type=is_file,
-                    metavar="<anatfile>",
-                    help="path to the anatomical Nifti file.")
-parser.add_argument("-s", "--sid",
-                    required=True,
-                    metavar="<subject id>",
-                    help="the subject identifier.")
-parser.add_argument("-o", "--outdir",
-                    required=True,
-                    metavar="<outdir>",
-                    help=("the detination folder where the data will be "
-                          "generated."))
-parser.add_argument("-r", "--repetitiontime",
-                    type=float,
-                    required=True,
-                    metavar="<repetition time>",
-                    help="the repetition time.")
-parser.add_argument("-t", "--template",
-                    type=is_file,
-                    required=True,
-                    metavar="<path template>",
-                    help="the path to the template image.")
+                    help="if set, use slice by slice undist correction "
+                         "(not recommanded).")
 parser.add_argument("-na", "--anatorientation",
                     metavar="<anatorientation>",
                     default="RAS",
@@ -268,11 +301,6 @@ parser.add_argument("-k", "--kernelsize",
                     default=3.,
                     metavar="<smooth kernel size>",
                     help="the smoothing kernel size in mm.")
-parser.add_argument("-j", "--jipdir",
-                    type=is_directory,
-                    required=True,
-                    metavar="<jip path>",
-                    help="the jip binary path.")
 parser.add_argument("-c", "--fslconfig",
                     type=is_file,
                     metavar="<fsl config>",
@@ -310,11 +338,13 @@ runtime = dict([(name, params[name])
                             "jipdir")])
 
 if args.verbose > 0:
-    print("[info] Start pyPreClin fMRI preprocessing...")
+    print("[info] Start fMRI preprocessings...")
+    print("-" * 50)
     print("[info] fMRI dataset: {0}.".format(args.funcfile))
     print("[info] Anatomical dataset: {0}.".format(args.anatfile))
     print("[info] Subject: {0}.".format(args.sid))
     print("[info] Template: {0}.".format(args.template))
+    print("-" * 50)
 outdir = args.outdir
 anatorient = args.anatorientation
 funcorient = args.funcorientation
@@ -323,6 +353,9 @@ anatfile = args.anatfile
 funcfile = args.funcfile
 tr = args.repetitiontime
 spmpath = args.spmpath
+warp = args.warp
+warp_index = args.warp_index
+warp_njobs = args.warp_njobs
 undist = args.undist
 kernel_size = args.kernelsize
 anatbrainthres = args.anatbrainthres
@@ -335,7 +368,8 @@ inputs = dict([(name, params[name])
                for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
                             "template", "anatorient", "funcorient", "subjdir",
                             "anatbrainthres", "undist", "spmpath",
-                            "normalization_trf", "coregistration_trf")])
+                            "normalization_trf", "coregistration_trf",
+                            "warp", "warp_index", "warp_njobs")])
 outputs = None
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
@@ -361,8 +395,29 @@ returncode = interface.run(
 st_outputs = returncode.outputs.get()
 slice_time_corrected_file = st_outputs["slice_time_corrected_file"]
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Slice time corrected functional: {0}.".format(
         slice_time_corrected_file))
+    print("-" * 50)
+
+
+"""
+B0 inhomogeneities
+"""
+if warp:
+    warp_dir = os.path.join(subjdir, STEPS["warp"])
+    if not os.path.isdir(warp_dir):
+        os.mkdir(warp_dir)
+    b0_corrected_file = timeserie_to_reference(
+        tfile=slice_time_corrected_file, rindex=warp_index, outdir=warp_dir,
+        njobs=warp_njobs, clean_tmp=True)
+else:
+    b0_corrected_file = slice_time_corrected_file
+if args.verbose > 0:
+    print("-" * 50)
+    print("[result] B0 inhomogeneities corrected functional: {0}.".format(
+        b0_corrected_file))
+    print("-" * 50)
 
 
 """
@@ -372,7 +427,7 @@ reorient images to match the orientation of the standard MNI152 template.
 reorient_dir = os.path.join(subjdir, STEPS["reorient"])
 if not os.path.isdir(reorient_dir):
     os.mkdir(reorient_dir)
-reoriented_funcfile = slice_time_corrected_file
+reoriented_funcfile = b0_corrected_file
 reoriented_anatfile = anatfile
 if funcorient !="RAS":
     reoriented_funcfile = reorient_image(
@@ -400,8 +455,10 @@ standard_anatfile = fslreorient2std(
     standard_anatfile,
     fslconfig=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Reoriented functional: {0}.".format(standard_funcfile))
     print("[result] Reoriented anatomical: {0}.".format(standard_anatfile))
+    print("-" * 50)
 
 
 """
@@ -419,7 +476,9 @@ if undist:
 else:
     undist_funcfile = standard_funcfile
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Undist functional: {0}.".format(undist_funcfile))
+    print("-" * 50)
 
 
 """
@@ -442,8 +501,10 @@ realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
     verbose=args.verbose,
     shfile=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Realign functional: {0}.".format(realign_funcfile))
     print("[result] Realign mean functional: {0}.".format(realign_func_meanfile))
+    print("-" * 50)
 
 
 """
@@ -463,12 +524,14 @@ if normalization_trf is not None:
     prefix="w",
     fslconfig=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] T1 in template space: {0}.".format(register_anatfile))
     print("[result] Masked T1 in template space: {0}.".format(
         register_anat_maskfile))
     print("[result] Masked T1 in native space: {0}.".format(
         native_anat_maskfile))
     print("[result] Alignement file: {0}.".format(align_normfile))
+    print("-" * 50)
 
 
 """
@@ -491,10 +554,12 @@ tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
     probabilities=True,
     shfile=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Antomical tissues: {0}.".format(segmentation_anatfile))
     print("[result] Antomical bias field: {0}.".format(bias_anatfile))
     print("[result] Antomical bias corrected: {0}.".format(
         biascorrected_anatfile))
+    print("-" * 50)
 
 
 """
@@ -514,12 +579,14 @@ if coregistration_trf is not None:
     prefix="w",
     fslconfig=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Func mean in T1 space: {0}.".format(register_func_meanfile))
     print("[result] Masked func mean in T1 space: {0}.".format(
         register_func_mean_maskfile))
     print("[result] Masked func mean in native space: {0}.".format(
         native_func_mean_maskfile))
     print("[result] Alignement file: {0}.".format(align_coregfile))
+    print("-" * 50)
 
 
 """
@@ -544,8 +611,10 @@ register_func_maskfile = apply_mask(
     mask_file=template,
     fslconfig=fsl_config)
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Func in template space: {0}.".format(register_funcfile))
     print("[result] Masked func in template space: {0}.".format(register_func_maskfile))
+    print("-" * 50)
 
 
 """
@@ -566,7 +635,9 @@ returncode = interface.run(
 smooth_outputs = returncode.outputs.get()
 smoothed_file = smooth_outputs["smoothed_file"]
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] Smoothed functional: {0}.".format(smoothed_file))
+    print("-" * 50)
 if os.path.islink(os.path.join(subjdir, "sMNI.nii")):
     os.remove(os.path.join(subjdir, "sMNI.nii"))
 os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
@@ -630,11 +701,13 @@ plot_registration(
     cut_coords=(-10, 0, 5),
     title="Normalization outline.")
 if args.verbose > 0:
+    print("-" * 50)
     print("[result] QA: {0}.".format(qa_files))
     print("[result] White matter: {0}.".format(tissue_files))
     print("[result] Realign: {0}.".format(realign_motion_file))
     print("[result] Coregister: {0}.".format(coregister_file))
     print("[result] Normalize: {0}.".format(normalize_file))
+    print("-" * 50)
 
 
 """
@@ -667,7 +740,9 @@ generate_pdf(
     show_boundary=False,
     verbose=0)
 if args.verbose > 1:
+    print("-" * 50)
     print("[result] Report: {0}.".format(reportfile))
+    print("-" * 50)
 
 
 """

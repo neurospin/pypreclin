@@ -9,13 +9,122 @@
 # System import
 import os
 import subprocess
+import nibabel
+import numpy
+import shutil
 
-# Module import
+# Hopla import
+from hopla.converter import hopla
+
+# Package import
 from pypreclin.utils.export import ungzip_file
 from pypreclin.utils.export import gzip_file
 from pypreclin import preproc
+
+# Pyconnectome
+import pyconnectome
 from pyconnectome.utils.filetools import apply_mask
 from pyconnectome import DEFAULT_FSL_PATH
+
+
+def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
+    """ Register all the fMRI volumes to a reference volume identified by his
+    index in the timeserie.
+
+    The registration used is a non-linear regisration.
+
+    Parameters
+    ----------
+    tfile: str
+        the file that containes the timeserie.
+    rindex: int
+        the reference volume index in the timeserie.
+    outdir: str
+        the destination folder.
+    njobs: int, default 1
+        the desired number of parallel job during the registration.
+    clean_tmp: bool, default True
+        if set, clean the temporary results.
+
+    Returns
+    -------
+    rfile: str
+        the registration result.
+    """
+    # Check input index
+    im = nibabel.load(tfile)
+    array = im.get_data()
+    if array.ndim != 4:
+        raise ValueError("A timeserie (4d volume) is expected.")
+    if rindex < 0 or rindex > array.shape[3]:
+        raise ValueError(
+            "Index '{0}' is out of bound considering the last dimension as "
+            "the time dimension '{1}'.".format(rindex, array.shape))
+
+    # Split the timeserie
+    tmpdir = os.path.join(outdir, "tmp")
+    if not os.path.isdir(tmpdir):
+        os.mkdir(tmpdir)
+    moving_images = []
+    outdirs = []
+    reference_image = None
+    for i in range(array.shape[3]):
+        _im = nibabel.Nifti1Image(array[..., i], im.affine)
+        _outfile = os.path.join(tmpdir, str(i).zfill(4) + ".nii.gz")
+        outdirs.append(os.path.join(tmpdir, str(i).zfill(4)))
+        if not os.path.isdir(outdirs[-1]):
+            os.mkdir(outdirs[-1])
+        nibabel.save(_im, _outfile)
+        moving_images.append(_outfile)
+        if i == rindex:
+            reference_image = _outfile
+
+    # Start volume to volume non rigid registration
+    scriptdir = os.path.join(os.path.dirname(pyconnectome.__file__), "scripts")
+    logfile = os.path.join(tmpdir, "log")
+    status, exitcodes = hopla(
+        os.path.join(scriptdir, "pyconnectome_ants_register"),
+        b="/usr/lib/ants",
+        o=outdirs,
+        i=moving_images,
+        r=reference_image,
+        w=1,
+        D=3,
+        G=0.2,
+        J=1,
+        N=True,
+        B=True,
+        v=2,
+        hopla_iterative_kwargs=["o", "i"],
+        hopla_cpus=njobs,
+        hopla_logfile=logfile,
+        hopla_verbose=1)
+    if not (numpy.asarray(exitcodes.values()) == 0).all():
+        raise ValueError("The registration failed, check the log "
+                         "'{0}'.".format(logfile))
+
+    # Start timeserie concatenation
+    timeserie = []
+    affine = None
+    for path in outdirs:
+        _im = nibabel.load(os.path.join(path,  "ants_2WarpToTemplate.nii.gz"))
+        if affine is None:
+            affine = _im.affine
+        elif not numpy.allclose(affine, im.affine):
+            raise ValueError("Affine matrices must be the same.")
+        data = _im.get_data()
+        data.shape += (1, )
+        timeserie.append(data)
+    registered_array = numpy.concatenate(timeserie, axis=3)
+    _im = nibabel.Nifti1Image(registered_array, affine)
+    rfile = os.path.join(outdir, "ants_WarpToTemplate.nii.gz")
+    nibabel.save(_im, rfile)
+
+    # Clean temporary files if requested
+    if clean_tmp:
+        shutil.rmtree(tmpdir)
+
+    return rfile
 
 
 def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
