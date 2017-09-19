@@ -126,3 +126,26 @@ def reorient_image(in_file, axes="RAS", prefix="swap", output_directory=None):
     nibabel.save(image, out_file)
 
     return out_file
+
+
+def switch_radiological_neurological(in_file, out_file):
+    """ Radiologists like looking at their images with the patient's left
+    on the right of the image. If they are looking at a brain image, it is
+    as if they were looking at the brain slice from the point of view of
+    the patient's feet. Neurologists like looking at brain images with the
+    patient's right on the right of the image. This perspective is as if the
+    neurologist is looking at the slice from the top of the patient's head.
+    The convention is one of image display.
+
+    Parameters
+    ----------
+    in_file: str (mandatory)
+        the input image in RAS convention.
+    out_file: str (mandatory)
+        the path to the input image with the left/right direction switched.
+    """
+    im = nibabel.load(in_file)
+    switch_im = nibabel.Nifti1Image(
+        im.get_data()[::-1, :, :], affine=im.get_affine(),
+        header=im.get_header())
+    nibabel.save(switch_im, out_file)

@@ -26,6 +26,9 @@ try:
     import bredala
     bredala.USE_PROFILER = False
     bredala.register("pypreclin.utils.reorient",
+                     names=["reorient_image",
+                            "switch_radiological_neurological"])
+    bredala.register("pypreclin.utils.reorient",
                      names=["export_interface_results",
                             "reorient_image"])
     bredala.register("pypreclin.preproc.register",
@@ -64,6 +67,7 @@ from pypreclin import __version__ as version
 from pypreclin import DEFAULT_SPM_STANDALONE_PATH
 from pypreclin import DEFAULT_FSL_PATH
 from pypreclin.utils.reorient import reorient_image
+from pypreclin.utils.reorient import switch_radiological_neurological
 from pypreclin.preproc.register import jip_align
 from pypreclin.preproc.register import apply_jip_align
 from pypreclin.preproc.register import timeserie_to_reference
@@ -429,13 +433,13 @@ if not os.path.isdir(reorient_dir):
     os.mkdir(reorient_dir)
 reoriented_funcfile = b0_corrected_file
 reoriented_anatfile = anatfile
-if funcorient !="RAS":
+if funcorient != "RAS":
     reoriented_funcfile = reorient_image(
-        funcfile,
+        b0_corrected_file,
         axes=funcorient,
         prefix="o",
         output_directory=reorient_dir)
-if anatorient !="RAS":
+if anatorient != "RAS":
     reoriented_anatfile = reorient_image(
         anatfile,
         axes=anatorient,
@@ -615,6 +619,9 @@ if args.verbose > 0:
     print("[result] Func in template space: {0}.".format(register_funcfile))
     print("[result] Masked func in template space: {0}.".format(register_func_maskfile))
     print("-" * 50)
+if os.path.islink(os.path.join(subjdir, "MNI.nii")):
+    os.remove(os.path.join(subjdir, "sMNI.nii"))
+os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
 
 
 """
@@ -638,9 +645,15 @@ if args.verbose > 0:
     print("-" * 50)
     print("[result] Smoothed functional: {0}.".format(smoothed_file))
     print("-" * 50)
-if os.path.islink(os.path.join(subjdir, "sMNI.nii")):
-    os.remove(os.path.join(subjdir, "sMNI.nii"))
-os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
+
+
+"""
+JIP uses in radialogical convention, go bback in neurological convention.
+"""
+switch_radiological_neurological(
+    smoothed_file, os.path.join(subjdir, "sMNI.nii"))
+switch_radiological_neurological(
+    register_func_maskfile, os.path.join(subjdir, "MNI.nii"))
 
 
 """
@@ -764,7 +777,8 @@ outputs = dict([(name, params[name])
                             "register_func_maskfile", "qa_files",
                             "tissue_files", "realign_motion_file",
                             "coregister_file", "normalize_file",
-                            "reportfile", "slice_time_corrected_file")])
+                            "reportfile", "slice_time_corrected_file",
+                            "b0_corrected_file")])
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
     log_file = os.path.join(logdir, "{0}.json".format(name))
