@@ -619,9 +619,6 @@ if args.verbose > 0:
     print("[result] Func in template space: {0}.".format(register_funcfile))
     print("[result] Masked func in template space: {0}.".format(register_func_maskfile))
     print("-" * 50)
-if os.path.islink(os.path.join(subjdir, "MNI.nii")):
-    os.remove(os.path.join(subjdir, "sMNI.nii"))
-os.symlink(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
 
 
 """
