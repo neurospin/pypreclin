@@ -122,7 +122,7 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
 
     # Clean temporary files if requested
     if clean_tmp:
-        shutil.rmtree(tmpdir)
+        shutil.rmtree(tmpdir, ignore_errors=True)
 
     return rfile
 
