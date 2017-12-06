@@ -27,7 +27,8 @@ from pyconnectome.utils.filetools import apply_mask
 from pyconnectome import DEFAULT_FSL_PATH
 
 
-def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
+def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
+                           clean_tmp=True):
     """ Register all the fMRI volumes to a reference volume identified by his
     index in the timeserie.
 
@@ -37,10 +38,12 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
     ----------
     tfile: str
         the file that containes the timeserie.
-    rindex: int
-        the reference volume index in the timeserie.
     outdir: str
         the destination folder.
+    rindex: int, default None
+        the reference volume index in the timeserie.
+    rfile: str, default None
+        the reference volume.
     njobs: int, default 1
         the desired number of parallel job during the registration.
     clean_tmp: bool, default True
@@ -48,7 +51,7 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
 
     Returns
     -------
-    rfile: str
+    resfile: str
         the registration result.
     """
     # Check input index
@@ -56,10 +59,16 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
     array = im.get_data()
     if array.ndim != 4:
         raise ValueError("A timeserie (4d volume) is expected.")
-    if rindex < 0 or rindex > array.shape[3]:
-        raise ValueError(
-            "Index '{0}' is out of bound considering the last dimension as "
-            "the time dimension '{1}'.".format(rindex, array.shape))
+    reference_image = None
+    if rindex is not None:
+        if rindex < 0 or rindex > array.shape[3]:
+            raise ValueError(
+                "Index '{0}' is out of bound considering the last dimension "
+                "as the time dimension '{1}'.".format(rindex, array.shape))
+    elif rfile is not None:
+        reference_image = rfile
+    else:
+        raise ValueError("You need to specify a reference file or index.")
 
     # Split the timeserie
     tmpdir = os.path.join(outdir, "tmp")
@@ -76,7 +85,7 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
             os.mkdir(outdirs[-1])
         nibabel.save(_im, _outfile)
         moving_images.append(_outfile)
-        if i == rindex:
+        if reference_image is None and i == rindex:
             reference_image = _outfile
 
     # Start volume to volume non rigid registration
@@ -117,14 +126,14 @@ def timeserie_to_reference(tfile, rindex, outdir, njobs=1, clean_tmp=True):
         timeserie.append(data)
     registered_array = numpy.concatenate(timeserie, axis=3)
     _im = nibabel.Nifti1Image(registered_array, affine)
-    rfile = os.path.join(outdir, "ants_WarpToTemplate.nii.gz")
-    nibabel.save(_im, rfile)
+    resfile = os.path.join(outdir, "ants_WarpToTemplate.nii.gz")
+    nibabel.save(_im, resfile)
 
     # Clean temporary files if requested
     if clean_tmp:
         shutil.rmtree(tmpdir, ignore_errors=True)
 
-    return rfile
+    return resfile
 
 
 def jip_align(source_file, target_file, outdir, jipdir, prefix="w",

@@ -277,10 +277,13 @@ parser.add_argument("-wn", "--warp-njobs",
                     help="the number of jobs running in parallel during the "
                          "the B0 inhomogeneities correction.")
 parser.add_argument("-wi", "--warp-index",
-                    type=int, default=0,
+                    type=int,
                     help="if the '-w' option is set, use this parameter to "
-                         "specify the refenrece volume index in the "
+                         "specify the reference volume index in the "
                          "timeserie.")
+parser.add_argument("-wf", "--warp-file",
+                    help="if the '-w' option is set, use this parameter to "
+                         "specify the reference volume to be used.")
 parser.add_argument("-u", "--undist",
                     action="store_true",
                     help="if set, use slice by slice undist correction "
@@ -359,6 +362,7 @@ tr = args.repetitiontime
 spmpath = args.spmpath
 warp = args.warp
 warp_index = args.warp_index
+warp_file = args.warp_file
 warp_njobs = args.warp_njobs
 undist = args.undist
 kernel_size = args.kernelsize
@@ -373,7 +377,7 @@ inputs = dict([(name, params[name])
                             "template", "anatorient", "funcorient", "subjdir",
                             "anatbrainthres", "undist", "spmpath",
                             "normalization_trf", "coregistration_trf",
-                            "warp", "warp_index", "warp_njobs")])
+                            "warp", "warp_index", "warp_njobs", "warp_file")])
 outputs = None
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
@@ -413,8 +417,8 @@ if warp:
     if not os.path.isdir(warp_dir):
         os.mkdir(warp_dir)
     b0_corrected_file = timeserie_to_reference(
-        tfile=slice_time_corrected_file, rindex=warp_index, outdir=warp_dir,
-        njobs=warp_njobs, clean_tmp=True)
+        tfile=slice_time_corrected_file, rindex=warp_index, rfile=warp_file,
+        outdir=warp_dir, njobs=warp_njobs, clean_tmp=True)
 else:
     b0_corrected_file = slice_time_corrected_file
 if args.verbose > 0:
