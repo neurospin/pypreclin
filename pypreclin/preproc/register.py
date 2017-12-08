@@ -76,7 +76,6 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
         os.mkdir(tmpdir)
     moving_images = []
     outdirs = []
-    reference_image = None
     for i in range(array.shape[3]):
         _im = nibabel.Nifti1Image(array[..., i], im.affine)
         _outfile = os.path.join(tmpdir, str(i).zfill(4) + ".nii.gz")
