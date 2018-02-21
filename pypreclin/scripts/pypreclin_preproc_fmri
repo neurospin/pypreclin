@@ -391,17 +391,22 @@ Slice timing
 st_dir = os.path.join(subjdir, STEPS["slice_timing"])
 if not os.path.isdir(st_dir):
     os.mkdir(st_dir)
-interface = fsl.SliceTimer()
-returncode = interface.run(
-    in_file=funcfile,
-    interleaved=True,
-    slice_direction=3,
-    time_repetition=tr,
-    index_dir=False,
-    out_file=os.path.join(
-        st_dir, os.path.basename(funcfile).split(".")[0] + ".nii.gz"))
-st_outputs = returncode.outputs.get()
-slice_time_corrected_file = st_outputs["slice_time_corrected_file"]
+    interface = fsl.SliceTimer()
+    returncode = interface.run(
+        in_file=funcfile,
+        interleaved=True,
+        slice_direction=3,
+        time_repetition=tr,
+        index_dir=False,
+        out_file=os.path.join(
+            st_dir, os.path.basename(funcfile).split(".")[0] + ".nii.gz"))
+    st_outputs = returncode.outputs.get()
+    slice_time_corrected_file = st_outputs["slice_time_corrected_file"]
+else:
+    dir_files = glob.glob(os.path.join(st_dir, "*.nii.gz"))
+    if len(dir_files) != 1:
+        raise ValueError("Unexpected number of files in '{0}'.".format(st_dir))
+    slice_time_corrected_file = dir_files[0]
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Slice time corrected functional: {0}.".format(
@@ -416,9 +421,15 @@ if warp:
     warp_dir = os.path.join(subjdir, STEPS["warp"])
     if not os.path.isdir(warp_dir):
         os.mkdir(warp_dir)
-    b0_corrected_file = timeserie_to_reference(
-        tfile=slice_time_corrected_file, rindex=warp_index, rfile=warp_file,
-        outdir=warp_dir, njobs=warp_njobs, clean_tmp=True)
+        b0_corrected_file = timeserie_to_reference(
+            tfile=slice_time_corrected_file, rindex=warp_index, rfile=warp_file,
+            outdir=warp_dir, njobs=warp_njobs, clean_tmp=True)
+    else:
+        dir_files = glob.glob(os.path.join(warp_dir, "*.nii.gz"))
+        if len(dir_files) != 1:
+            raise ValueError(
+                "Unexpected number of files in '{0}'.".format(warp_dir))
+        b0_corrected_file = dir_files[0]
 else:
     b0_corrected_file = slice_time_corrected_file
 if args.verbose > 0:
@@ -433,35 +444,51 @@ Reorient images not in RAS coordinate system and
 reorient images to match the orientation of the standard MNI152 template.
 """
 reorient_dir = os.path.join(subjdir, STEPS["reorient"])
+already_processed = False
 if not os.path.isdir(reorient_dir):
     os.mkdir(reorient_dir)
+    already_processed = True
 reoriented_funcfile = b0_corrected_file
 reoriented_anatfile = anatfile
 if funcorient != "RAS":
-    reoriented_funcfile = reorient_image(
-        b0_corrected_file,
-        axes=funcorient,
-        prefix="o",
-        output_directory=reorient_dir)
+    if not already_processed:
+        reoriented_funcfile = reorient_image(
+            b0_corrected_file,
+            axes=funcorient,
+            prefix="o",
+            output_directory=reorient_dir)
+    else:
+        reoriented_funcfile = os.path.join(
+            reorient_dir, "o" + os.path.basename(b0_corrected_file))
 if anatorient != "RAS":
-    reoriented_anatfile = reorient_image(
-        anatfile,
-        axes=anatorient,
-        prefix="o",
-        output_directory=reorient_dir)
+    if not already_processed:
+        reoriented_anatfile = reorient_image(
+            anatfile,
+            axes=anatorient,
+            prefix="o",
+            output_directory=reorient_dir)
+    else:
+        reoriented_anatfile = os.path.join(
+            reorient_dir, "o" + os.path.basename(anatfile))
 
 standard_funcfile = os.path.join(
     reorient_dir, "d" + os.path.basename(reoriented_funcfile).split(".")[0])
-standard_funcfile = fslreorient2std(
-    reoriented_funcfile,
-    standard_funcfile,
-    fslconfig=fsl_config)
+if not already_processed:
+    standard_funcfile = fslreorient2std(
+        reoriented_funcfile,
+        standard_funcfile,
+        fslconfig=fsl_config)
+else:
+    standard_funcfile = standard_funcfile + ".nii.gz"
 anat_basename = "d" + os.path.basename(reoriented_anatfile).split(".")[0]
 standard_anatfile = os.path.join(reorient_dir, anat_basename)
-standard_anatfile = fslreorient2std(
-    reoriented_anatfile,
-    standard_anatfile,
-    fslconfig=fsl_config)
+if not already_processed:
+    standard_anatfile = fslreorient2std(
+        reoriented_anatfile,
+        standard_anatfile,
+        fslconfig=fsl_config)
+else:
+    standard_anatfile = standard_anatfile + ".nii.gz"
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Reoriented functional: {0}.".format(standard_funcfile))
@@ -473,6 +500,7 @@ if args.verbose > 0:
 Undist
 """
 if undist:
+    raise NotImplementedError("This option is deprecated and must not be used.")
     undist_dir = os.path.join(subjdir, STEPS["undist"])
     if not os.path.isdir(undist_dir):
         os.mkdir(undist_dir)
@@ -495,19 +523,37 @@ Realign
 realign_dir = os.path.join(subjdir, STEPS["realign"])
 if not os.path.isdir(realign_dir):
     os.mkdir(realign_dir)
-realign_func_rootfile = os.path.join(
-    realign_dir, "r" + os.path.basename(undist_funcfile).split(".")[0])
-realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
-    in_file=undist_funcfile,
-    out_fileroot=realign_func_rootfile,
-    cost="normcorr",
-    bins=256,
-    dof=12,
-    reg_to_mean=True,
-    mats=True,
-    plots=True,
-    verbose=args.verbose,
-    shfile=fsl_config)
+    realign_func_rootfile = os.path.join(
+        realign_dir, "r" + os.path.basename(undist_funcfile).split(".")[0])
+    realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
+        in_file=undist_funcfile,
+        out_fileroot=realign_func_rootfile,
+        cost="normcorr",
+        bins=256,
+        dof=12,
+        reg_to_mean=True,
+        mats=True,
+        plots=True,
+        verbose=args.verbose,
+        shfile=fsl_config)
+else:
+    dir_files = glob.glob(os.path.join(realign_dir, "*.nii.gz"))
+    if len(dir_files) != 2:
+        raise ValueError(
+            "Unexpected number of files in '{0}'.".format(realign_dir))
+    realign_funcfile, realign_func_meanfile = (None, None)
+    for path in dir_files:
+        if path.endswith("mean_reg.nii.gz"):
+            realign_func_meanfile = path
+        else:
+            realign_funcfile = path
+    realign_funcfile = dir_files[0]
+    realign_func_meanfile = 
+    dir_files = glob.glob(os.path.join(realign_dir, "*.par"))
+    if len(dir_files) != 1:
+        raise ValueError(
+            "Unexpected number of files in '{0}'.".format(realign_dir))
+    realign_func_parfile = dir_files[0]     
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Realign functional: {0}.".format(realign_funcfile))
@@ -523,14 +569,22 @@ if not os.path.isdir(normalization_dir):
     os.mkdir(normalization_dir)
 if normalization_trf is not None:
     shutil.copy(normalization_trf, normalization_dir)
-(register_anatfile, register_anat_maskfile,
- native_anat_maskfile, align_normfile) = jip_align(
-    source_file=standard_anatfile,
-    target_file=template,
-    outdir=normalization_dir,
-    jipdir=jipdir,
-    prefix="w",
-    fslconfig=fsl_config)
+    (register_anatfile, register_anat_maskfile,
+     native_anat_maskfile, align_normfile) = jip_align(
+        source_file=standard_anatfile,
+        target_file=template,
+        outdir=normalization_dir,
+        jipdir=jipdir,
+        prefix="w",
+        fslconfig=fsl_config)
+else:
+    register_anatfile = glob.glob(
+        os.path.join(normalization_dir, "wd*.nii.gz"))[0]
+    register_anat_maskfile = glob.glob(
+        os.path.join(normalization_dir, "mwd*.nii.gz"))[0]
+    native_anat_maskfile = glob.glob(
+        os.path.join(normalization_dir, "nwmwd*.nii.gz"))[0]
+    align_normfile = os.path.join(normalization_dir, "align.com")
 if args.verbose > 0:
     print("-" * 50)
     print("[result] T1 in template space: {0}.".format(register_anatfile))
@@ -548,19 +602,28 @@ Tissues segmentation and spatial intensity variations correction.
 inhomogeneities_dir = os.path.join(subjdir, STEPS["inhomogeneities"])
 if not os.path.isdir(inhomogeneities_dir):
     os.mkdir(inhomogeneities_dir)
-fast_fileroot = os.path.join(
-    inhomogeneities_dir, "fast_" + os.path.basename(
-        register_anat_maskfile).split(".")[0])
-tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
-    input_file=register_anat_maskfile,
-    out_fileroot=fast_fileroot,
-    klass=3,
-    im_type=1,
-    segments=True,
-    bias_field=True,
-    bias_corrected_im=True,
-    probabilities=True,
-    shfile=fsl_config)
+    fast_fileroot = os.path.join(
+        inhomogeneities_dir, "fast_" + os.path.basename(
+            register_anat_maskfile).split(".")[0])
+    tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
+        input_file=register_anat_maskfile,
+        out_fileroot=fast_fileroot,
+        klass=3,
+        im_type=1,
+        segments=True,
+        bias_field=True,
+        bias_corrected_im=True,
+        probabilities=True,
+        shfile=fsl_config)
+else:
+    tpm = glob.glob(os.path.join(inhomogeneities_dir, "*_prob_*.nii.gz"))
+    tsm = glob.glob(os.path.join(inhomogeneities_dir, "*_pve_*.nii.gz"))
+    segmentation_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_seg.nii.gz"))[0]
+    bias_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_bias.nii.gz"))[0]
+    biascorrected_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_restore.nii.gz"))[0]
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Antomical tissues: {0}.".format(segmentation_anatfile))
@@ -578,14 +641,22 @@ if not os.path.isdir(coregistration_dir):
     os.mkdir(coregistration_dir)
 if coregistration_trf is not None:
     shutil.copy(coregistration_trf, coregistration_dir)
-(register_func_meanfile, register_func_mean_maskfile,
- native_func_mean_maskfile, align_coregfile) = jip_align(
-    source_file=realign_func_meanfile,
-    target_file=native_anat_maskfile,
-    outdir=coregistration_dir,
-    jipdir=jipdir,
-    prefix="w",
-    fslconfig=fsl_config)
+    (register_func_meanfile, register_func_mean_maskfile,
+     native_func_mean_maskfile, align_coregfile) = jip_align(
+        source_file=realign_func_meanfile,
+        target_file=native_anat_maskfile,
+        outdir=coregistration_dir,
+        jipdir=jipdir,
+        prefix="w",
+        fslconfig=fsl_config)
+else:
+    register_func_meanfile = glob.glob(
+        os.path.join(normalization_dir, "wrd*.nii.gz"))[0]
+    register_func_mean_maskfile = glob.glob(
+        os.path.join(normalization_dir, "mwrd*.nii.gz"))[0]
+    native_func_mean_maskfile = glob.glob(
+        os.path.join(normalization_dir, "nwmwrd*.nii.gz"))[0]
+    align_coregfile = os.path.join(normalization_dir, "align.com")
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Func mean in T1 space: {0}.".format(register_func_meanfile))
@@ -603,21 +674,24 @@ Wrap functional: resample the functional serie and mask the registered serie.
 wrap_dir = os.path.join(subjdir, STEPS["wrap"])
 if not os.path.isdir(wrap_dir):
     os.mkdir(wrap_dir)
-deformed_files = apply_jip_align(
-    apply_to_files=[realign_funcfile],
-    align_with=[align_coregfile, align_normfile],
-    outdir=wrap_dir,
-    jipdir=jipdir,
-    prefix="w",
-    apply_inv=False)
-register_funcfile = deformed_files[0]
-register_func_mask_fileroot = os.path.join(
-    wrap_dir, "m" + os.path.basename(register_funcfile).split(".")[0])
-register_func_maskfile = apply_mask(
-    input_file=register_funcfile,
-    output_fileroot=register_func_mask_fileroot,
-    mask_file=template,
-    fslconfig=fsl_config)
+    deformed_files = apply_jip_align(
+        apply_to_files=[realign_funcfile],
+        align_with=[align_coregfile, align_normfile],
+        outdir=wrap_dir,
+        jipdir=jipdir,
+        prefix="w",
+        apply_inv=False)
+    register_funcfile = deformed_files[0]
+    register_func_mask_fileroot = os.path.join(
+        wrap_dir, "m" + os.path.basename(register_funcfile).split(".")[0])
+    register_func_maskfile = apply_mask(
+        input_file=register_funcfile,
+        output_fileroot=register_func_mask_fileroot,
+        mask_file=template,
+        fslconfig=fsl_config)
+else:
+    register_funcfile = glob.glob(os.path.join(wrap_dir, "w*.nii.gz"))[0]
+    register_func_maskfile = glob.glob(os.path.join(wrap_dir, "mw*.nii.gz"))[0]
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Func in template space: {0}.".format(register_funcfile))
@@ -631,17 +705,19 @@ Smooth the functional serie.
 smooth_dir = os.path.join(subjdir, STEPS["smooth"])
 if not os.path.isdir(smooth_dir):
     os.mkdir(smooth_dir)
-interface = fsl.Smooth()
-returncode = interface.run(
-    in_file=register_func_maskfile,
-    fwhm=kernel_size,
-    output_type="NIFTI",
-    smoothed_file=os.path.join(
-        smooth_dir,
-        "smooth_" + os.path.basename(register_func_maskfile).split(".")[0] +
-        ".nii"))
-smooth_outputs = returncode.outputs.get()
-smoothed_file = smooth_outputs["smoothed_file"]
+    interface = fsl.Smooth()
+    returncode = interface.run(
+        in_file=register_func_maskfile,
+        fwhm=kernel_size,
+        output_type="NIFTI",
+        smoothed_file=os.path.join(
+            smooth_dir,
+            "smooth_" + os.path.basename(register_func_maskfile).split(".")[0] +
+            ".nii"))
+    smooth_outputs = returncode.outputs.get()
+    smoothed_file = smooth_outputs["smoothed_file"]
+else:
+    smoothed_file = glob.glob(os.path.join(smooth_dir, "smooth_*.nii"))[0]
 if args.verbose > 0:
     print("-" * 50)
     print("[result] Smoothed functional: {0}.".format(smoothed_file))
@@ -663,57 +739,63 @@ Compute some snaps assessing the different processing steps.
 snapdir = os.path.join(subjdir, STEPS["snaps"])
 if not os.path.isdir(snapdir):
     os.mkdir(snapdir)
-# > generate QA on functional time serie
-qa_files = []
-for path, title in [([standard_funcfile], "qa_plot_before_correction_{0}.png"),
-                    ([realign_funcfile], "qa_plot_after_correction_{0}.png")]:
-    diff_results = multi_session_time_slice_diffs(path)
-    axes = plot_tsdiffs(diff_results, use_same_figure=False)
-    figures = [ax.get_figure() for ax in axes]
-    template_file = os.path.join(snapdir, title)
-    qa_filenames = [template_file.format(i) for i in range(len(figures))]
-    for fig, fname in zip(figures, qa_filenames):
-        fig.savefig(fname, bbox_inches="tight", dpi=200)
-        plt.close(fig)
-        qa_files.append(fname)
-# > generate tissue segmentation plots
-tissue_files = []
-for cnt, path in enumerate(tsm):
-    tissue_file = os.path.join(snapdir, "fast_tissue_{0}.png".format(cnt))
-    plot_segmentation(
-        biascorrected_anatfile,
-        path,
-        output_filename=tissue_file,
+    # > generate QA on functional time serie
+    qa_files = []
+    for path, title in [([standard_funcfile], "qa_plot_before_correction_{0}.png"),
+                        ([realign_funcfile], "qa_plot_after_correction_{0}.png")]:
+        diff_results = multi_session_time_slice_diffs(path)
+        axes = plot_tsdiffs(diff_results, use_same_figure=False)
+        figures = [ax.get_figure() for ax in axes]
+        template_file = os.path.join(snapdir, title)
+        qa_filenames = [template_file.format(i) for i in range(len(figures))]
+        for fig, fname in zip(figures, qa_filenames):
+            fig.savefig(fname, bbox_inches="tight", dpi=200)
+            plt.close(fig)
+            qa_files.append(fname)
+    # > generate tissue segmentation plots
+    tissue_files = []
+    for cnt, path in enumerate(tsm):
+        tissue_file = os.path.join(snapdir, "fast_tissue_{0}.png".format(cnt))
+        plot_segmentation(
+            biascorrected_anatfile,
+            path,
+            output_filename=tissue_file,
+            cut_coords=(-10, 20, 5),
+            cmap=None,
+            title="Segmentation tissue {0}".format(cnt),
+            close=True)
+        tissue_files.append(tissue_file)
+    # > generate a motion parameter plot
+    realign_motion_file = os.path.join(snapdir, "realign_motion_parameters.png")
+    plot_spm_motion_parameters(
+        realign_func_parfile,
+        title="Realign: estimated motion.")
+    plt.savefig(realign_motion_file, bbox_inches="tight", dpi=200)
+    plt.close()
+    # > generate coregistration plot
+    coregister_file = os.path.join(snapdir, "coregister.png")
+    plot_registration(
+        register_func_meanfile,
+        standard_anatfile,
+        output_filename=coregister_file,
+        close=True,
         cut_coords=(-10, 20, 5),
-        cmap=None,
-        title="Segmentation tissue {0}".format(cnt),
-        close=True)
-    tissue_files.append(tissue_file)
-# > generate a motion parameter plot
-realign_motion_file = os.path.join(snapdir, "realign_motion_parameters.png")
-plot_spm_motion_parameters(
-    realign_func_parfile,
-    title="Realign: estimated motion.")
-plt.savefig(realign_motion_file, bbox_inches="tight", dpi=200)
-plt.close()
-# > generate coregistration plot
-coregister_file = os.path.join(snapdir, "coregister.png")
-plot_registration(
-    register_func_meanfile,
-    standard_anatfile,
-    output_filename=coregister_file,
-    close=True,
-    cut_coords=(-10, 20, 5),
-    title="Coregister outline.")
-# > generate normalization plot
-normalize_file = os.path.join(snapdir, "normalization.png")
-plot_registration(
-    template,
-    register_anatfile,
-    output_filename=normalize_file,
-    close=True,
-    cut_coords=(-10, 0, 5),
-    title="Normalization outline.")
+        title="Coregister outline.")
+    # > generate normalization plot
+    normalize_file = os.path.join(snapdir, "normalization.png")
+    plot_registration(
+        template,
+        register_anatfile,
+        output_filename=normalize_file,
+        close=True,
+        cut_coords=(-10, 0, 5),
+        title="Normalization outline.")
+else:
+    qa_files = glob.glob(os.path.join(snapdir, "qa_*.png"))
+    tissue_files = glob.glob(os.path.join(snapdir, "fast_*.png"))
+    realign_motion_file = os.path.join(snapdir, "realign_motion_parameters.png")
+    coregister_file = os.path.join(snapdir, "coregister.png")
+    normalize_file = os.path.join(snapdir, "normalization.png")
 if args.verbose > 0:
     print("-" * 50)
     print("[result] QA: {0}.".format(qa_files))
@@ -728,31 +810,31 @@ if args.verbose > 0:
 Generate a QC reporting
 """
 reportdir = os.path.join(subjdir, STEPS["report"])
+reportfile = os.path.join(reportdir, "QC_preproc_{0}.pdf".format(sid))
 if not os.path.isdir(reportdir):
     os.mkdir(reportdir)
-reportfile = os.path.join(reportdir, "QC_preproc_{0}.pdf".format(sid))
-tic = datetime.now()
-generate_pdf(
-    datapath=snapdir,
-    struct_file=os.path.join(
-        os.path.abspath(os.path.dirname(pypreclin.__file__)), "utils",
-        "resources", "pypreclin_qcpreproc.json"),
-    author="NeuroSpin",
-    client="-",
-    poweredby="FSL-SPM-Nipype-PyPreProcess",
-    project="-",
-    timepoint="-",
-    subject=sid,
-    date="{0}-{1}-{2}".format(tic.year, tic.month, tic.day),
-    title="fMRI Preprocessing QC Reporting",
-    filename=reportfile,
-    pagesize=None,
-    left_margin=10,
-    right_margin=10,
-    top_margin=20,
-    bottom_margin=20,
-    show_boundary=False,
-    verbose=0)
+    tic = datetime.now()
+    generate_pdf(
+        datapath=snapdir,
+        struct_file=os.path.join(
+            os.path.abspath(os.path.dirname(pypreclin.__file__)), "utils",
+            "resources", "pypreclin_qcpreproc.json"),
+        author="NeuroSpin",
+        client="-",
+        poweredby="FSL-SPM-Nipype-PyPreProcess",
+        project="-",
+        timepoint="-",
+        subject=sid,
+        date="{0}-{1}-{2}".format(tic.year, tic.month, tic.day),
+        title="fMRI Preprocessing QC Reporting",
+        filename=reportfile,
+        pagesize=None,
+        left_margin=10,
+        right_margin=10,
+        top_margin=20,
+        bottom_margin=20,
+        show_boundary=False,
+        verbose=0)
 if args.verbose > 1:
     print("-" * 50)
     print("[result] Report: {0}.".format(reportfile))
