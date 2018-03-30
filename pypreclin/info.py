@@ -32,18 +32,26 @@ CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
 
 # Project descriptions
 description = """
-[pyPreClin]
-This package provides common scripts:
+PYthon Preprocessing for Clinical data.
+"""
+SUMMARY = """
+.. container:: summary-carousel
 
-* 
+    pyPreClin is a Python module for **preprocessing clinical data** that
+    offers:
+
+    * a script to pre-process fMRI data.
 """
 long_description = """
 =========
 pyPreClin
 =========
 
-A Python project that provides a collection of python scripts for
-preprocessing MRI preclinical data.
+pyPreClin is a Python project that provides a collection of python scripts for
+preprocessing MRI preclinical datasets.
+This work is made available by a community of people, amoung which the
+CEA Neurospin UNATI and CEA NeuroSpin UNICOG laboratories, in particular
+A. Grigis, J. Tasserie, and B. Jarraya.
 """
 
 # Main setup parameters
@@ -57,12 +65,23 @@ URL = "https://bioproj.extra.cea.fr/"
 DOWNLOAD_URL = "https://bioproj.extra.cea.fr/"
 LICENSE = "CeCILL-B"
 CLASSIFIERS = CLASSIFIERS
-AUTHOR = "pyPreClin developers"
+AUTHOR = """
+Antoine Grigis <antoine.grigis@cea.fr>
+Jordy Tasserie <jordy.tasserie@cea.fr>
+Bechir Jarraya <bechir.jarraya@cea.fr>
+"""
 AUTHOR_EMAIL = "antoine.grigis@cea.fr"
 PLATFORMS = "OS Independent"
 ISRELEASE = True
 VERSION = __version__
 PROVIDES = ["pypreclin"]
 REQUIRES = [
-    "pypreprocess"]
+    "numpy>=1.11.0",
+    "hopla>=1.04",
+    "bredala>=1.0.3",
+    "pyconnectome>=1.0.0",
+    "pyconnectomist>=2.0.0",
+    "nipype>=1.0.1",
+    "matplotlib>=1.5.1",
+    "pypreprocess>=0.0.1"]
 EXTRA_REQUIRES = {}

@@ -13,3 +13,8 @@ Package to process fMRI datasets.
 from .info import __version__
 from .info import DEFAULT_SPM_STANDALONE_PATH
 from .info import DEFAULT_FSL_PATH
+from .configure import info
+
+
+# Display a welcome message
+print(info())

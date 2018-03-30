@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2016
+# NSAp - Copyright (C) CEA, 2016 - 2018
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
@@ -18,9 +18,13 @@ infopath = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "pypreclin", "info.py"))
 with open(infopath) as open_file:
     exec(open_file.read(), release_info)
-pkgdata = {}
+pkgdata = {
+    "pypreclin": [
+        os.path.join("utils", "resources", "*.json"),
+        os.path.join("preproc", "resources", "*.com")]
+}
 scripts = [
-    "pypreclin/scripts/"
+    "pypreclin/scripts/pypreclin_preproc_fmri"
 ]
 
 setup(
