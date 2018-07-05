@@ -766,6 +766,8 @@ switch_radiological_neurological(
     smoothed_file, os.path.join(subjdir, "sMNI.nii"))
 switch_radiological_neurological(
     register_func_maskfile, os.path.join(subjdir, "MNI.nii"))
+switch_radiological_neurological(
+    register_anat_maskfile, os.path.join(subjdir, "anat.nii"))
 
 
 """
