@@ -121,8 +121,12 @@ def reorient_image(in_file, axes="RAS", prefix="swap", output_directory=None):
     image.set_sform(transformation)
 
     # Save the rectified image
-    fsplit = os.path.split(in_file)
-    out_file = os.path.join(output_directory, prefix + fsplit[1])
+    basename = os.path.basename(in_file)
+    if basename.endswith(".nii"):
+        basename += ".gz"
+    elif not basename.endswith(".nii.gz"):
+        basename += ".nii.gz"
+    out_file = os.path.join(output_directory, prefix + basename)
     nibabel.save(image, out_file)
 
     return out_file

@@ -284,6 +284,14 @@ parser.add_argument(
     action="store_true",
     help="if set, clean the subject destination folder.")
 parser.add_argument(
+    "-d", "--realign-dof",
+    type=int, default=12, metavar="<dof>",
+    help="the DOF used during the volumes relagnment level.")
+parser.add_argument(
+    "-z", "--realign-to-mean",
+    action="store_true",
+    help="register timeseries to mean volume during realignment.")
+parser.add_argument(
     "-w", "--warp",
     action="store_true",
     help="if set, use a non linear registration to remove B0 first and second "
@@ -396,13 +404,16 @@ template = args.template
 subjdir = os.path.join(outdir, sid)
 normalization_trf = args.normalization_trf
 coregistration_trf = args.coregistration_trf
+dof = args.realign_dof
+realign_to_mean = args.realign_to_mean
 params = locals()
 inputs = dict([(name, params[name])
                for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
                             "template", "anatorient", "funcorient", "subjdir",
                             "anatbrainthres", "undist", "spmpath",
                             "normalization_trf", "coregistration_trf",
-                            "warp", "warp_index", "warp_njobs", "warp_file")])
+                            "warp", "warp_index", "warp_njobs", "warp_file",
+                            "dof", "realign_to_mean")])
 outputs = None
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
@@ -419,7 +430,7 @@ if not os.path.isdir(st_dir):
     interface = fsl.SliceTimer()
     returncode = interface.run(
         in_file=funcfile,
-        interleaved=True,
+        interleaved=False,
         slice_direction=3,
         time_repetition=tr,
         index_dir=False,
@@ -561,8 +572,10 @@ if not os.path.isdir(realign_dir):
         out_fileroot=realign_func_rootfile,
         cost="normcorr",
         bins=256,
-        dof=12,
-        reg_to_mean=True,
+        dof=dof,
+        refvol=warp_index,
+        reffile=warp_file,
+        reg_to_mean=realign_to_mean,
         mats=True,
         plots=True,
         verbose=args.verbose,
