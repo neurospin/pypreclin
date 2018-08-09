@@ -285,7 +285,7 @@ parser.add_argument(
     help="if set, clean the subject destination folder.")
 parser.add_argument(
     "-d", "--realign-dof",
-    type=int, default=12, metavar="<dof>",
+    type=int, default=6, metavar="<dof>",
     help="the DOF used during the volumes relagnment level.")
 parser.add_argument(
     "-z", "--realign-to-mean",
