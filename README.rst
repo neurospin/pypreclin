@@ -57,4 +57,8 @@ etc. Please refer to the Singularity documentation at for more details.
 
 We provide a Singularity image with pyPreClin, which can be found at xxx.
 
+To use it install first Singularity. On Debian/Ubuntu the package is called
+singularity-container. You can check that Singularity is installed by
+typing singularity --help in a terminal.
+
 

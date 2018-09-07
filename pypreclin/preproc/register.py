@@ -20,6 +20,7 @@ from hopla.converter import hopla
 from pypreclin.utils.export import ungzip_file
 from pypreclin.utils.export import gzip_file
 from pypreclin import preproc
+from pypreclin.preproc.jip_controller import call_auto
 
 # Pyconnectome
 import pyconnectome
@@ -136,7 +137,7 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
 
 
 def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
-              fslconfig=DEFAULT_FSL_PATH):
+              auto=False, non_linear=False, fslconfig=DEFAULT_FSL_PATH):
     """ Register a source image to a taget image using the 'jip_align'
     command.
 
@@ -152,6 +153,11 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
         the jip binary path.
     prefix: str (optional, default 'w')
         prefix the generated file with this character.
+    auto: bool (optional, default False)
+        if set control the JIP window with the script.
+    non_linear: bool (optional, default False)
+        in the automatic mode, decide or not to compute the non-linear
+        deformation field.
     fslconfig: str (optional)
         the FSL .sh configuration file.
 
@@ -183,8 +189,15 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
     align_file = os.path.join(outdir, "align.com")
     if not os.path.isfile(align_file):
         cmd = ["align", source_file, "-t", target_file]
-        print cmd
-        subprocess.call(cmd, env=jip_envriron)
+        print " ".join(cmd)
+        if auto:
+            auto_cmd = cmd + ["-L", "111111111111", "-W", "000"]
+            call_auto(auto_cmd, lock_file="/tmp/jip.lock")
+            if non_linear:
+                raise ValueError("Non linear auto registration not yet "
+                                 "implemented with JIP.")     
+        else:
+            subprocess.call(cmd, env=jip_envriron)
         if not os.path.isfile(align_file):
             raise ValueError(
                 "No 'align.com' file in '{0}' folder.".format(outdir))
