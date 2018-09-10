@@ -58,7 +58,7 @@ def send_key(key, win_id):
     subprocess.check_call(cmd)
 
 
-def create_win(cmd, lock_file):
+def create_win(cmd, lock_file, default_windows):
     """ Create a JIP windows and return his id.
 
     Parameters
@@ -132,7 +132,7 @@ def call_auto(cmd, lock_file, refresh_winid=True):
             if active_windows[0] != win_id:
                 print("Refreshing JIP windows ID {0} -> {1}.".format(
                     win_id, active_windows[0]))
-                wind_id = active_windows[0]
+                win_id = active_windows[0]
         if "MI =" in line:
             mi = float(line.split("=")[1])
             break
