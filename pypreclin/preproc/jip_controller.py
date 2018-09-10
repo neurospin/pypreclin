@@ -68,6 +68,8 @@ def create_win(cmd, lock_file):
     lock_file: str
         the path to a file used to acquired a lock in order to identify
         properly the window id.
+    default_windows: list
+        the default windows ID.
 
     Returns
     -------
@@ -76,7 +78,6 @@ def create_win(cmd, lock_file):
     win_id: int
         the associated window id.
     """
-    default_windows = search_align_windows()
     with FileLock(lock_file):
         process = subprocess.Popen(
                 cmd, env=os.environ, stdout=subprocess.PIPE,
@@ -94,7 +95,7 @@ def create_win(cmd, lock_file):
     return process, win_id
 
 
-def call_auto(cmd, lock_file):
+def call_auto(cmd, lock_file, refresh_winid=True):
     """ Execute a JIP command and control the graphical interface.
 
     Parameters
@@ -104,23 +105,35 @@ def call_auto(cmd, lock_file):
     lock_file: str
         the path to a file used to acquired a lock in order to identify
         properly the window id.
+    refresh_winid: bool (optional, default True)
+        if set check that only one JIP alignment is performed at a time. The
+        windows ID is refreshed at each iteration.
 
     Returns
     -------
     mi: float
         the final optimizer cost function value (mutual information).
     """
-    process, win_id = create_win(cmd, lock_file)
+    default_windows = search_align_windows()
+    process, win_id = create_win(cmd, lock_file, default_windows)
     send_run = False
     while True:
-        time.sleep(2)
+        time.sleep(2)          
         if not send_run:
             send_key("a", win_id)
             send_run = True
         line = non_block_read(process.stdout)
         if line == "":
             continue
-        if "MI" in line:
+        if refresh_winid:
+            new_windows = search_align_windows()
+            active_windows = list(set(new_windows) - set(default_windows))
+            assert len(active_windows) == 1, "Parallel jobs not supported yet."
+            if active_windows[0] != win_id:
+                print("Refreshing JIP windows ID {0} -> {1}.".format(
+                    win_id, active_windows[0]))
+                wind_id = active_windows[0]
+        if "MI =" in line:
             mi = float(line.split("=")[1])
             break
     send_key("q", win_id)

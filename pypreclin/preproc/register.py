@@ -189,7 +189,6 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
     align_file = os.path.join(outdir, "align.com")
     if not os.path.isfile(align_file):
         cmd = ["align", source_file, "-t", target_file]
-        print " ".join(cmd)
         if auto:
             auto_cmd = cmd + ["-L", "111111111111", "-W", "000"]
             call_auto(auto_cmd, lock_file="/tmp/jip.lock")
