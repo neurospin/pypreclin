@@ -187,19 +187,21 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
 
     # Copy source file
     align_file = os.path.join(outdir, "align.com")
-    if not os.path.isfile(align_file):
-        cmd = ["align", source_file, "-t", target_file]
-        if auto:
-            auto_cmd = cmd + ["-L", "111111111111", "-W", "000"]
-            call_auto(auto_cmd, lock_file="/tmp/jip.lock")
-            if non_linear:
-                raise ValueError("Non linear auto registration not yet "
-                                 "implemented with JIP.")     
+    cmd = ["align", source_file, "-t", target_file]
+    if auto:
+        if non_linear:
+            auto_cmd = cmd + ["-L", "111111111111", "-W", "111", "-a"]
         else:
-            subprocess.call(cmd, env=jip_envriron)
-        if not os.path.isfile(align_file):
-            raise ValueError(
-                "No 'align.com' file in '{0}' folder.".format(outdir))
+            auto_cmd = cmd + ["-L", "111111111111", "-W", "000", "-A"]
+        if os.path.isfile(align_file):
+            auto_cmd += ["-I"]
+        print(auto_cmd)
+        subprocess.call(auto_cmd, env=jip_envriron)     
+    else:
+        subprocess.call(cmd, env=jip_envriron)
+    if not os.path.isfile(align_file):
+        raise ValueError(
+            "No 'align.com' file in '{0}' folder.".format(outdir))
 
     # Get the apply nonlinear deformation jip batches
     aplly_nonlin_batch = os.path.join(
