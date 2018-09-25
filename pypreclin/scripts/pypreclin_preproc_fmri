@@ -286,12 +286,12 @@ parser.add_argument(
     help="if set, clean the subject destination folder.")
 parser.add_argument(
     "-d", "--realign-dof",
-    type=int, default=6, metavar="<dof>",
+    type=int, default=12, metavar="<dof>",
     help="the DOF used during the volumes relagnment level.")
 parser.add_argument(
-    "-z", "--realign-to-mean",
+    "-z", "--realign-to-vol",
     action="store_true",
-    help="register timeseries to mean volume during realignment.")
+    help="register timeseries to first or mean volume during realignment.")
 parser.add_argument(
     "-w", "--warp",
     action="store_true",
@@ -418,7 +418,7 @@ subjdir = os.path.join(outdir, sid)
 normalization_trf = args.normalization_trf
 coregistration_trf = args.coregistration_trf
 dof = args.realign_dof
-realign_to_mean = args.realign_to_mean
+realign_to_mean = not args.realign_to_vol
 params = locals()
 inputs = dict([(name, params[name])
                for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
