@@ -84,8 +84,7 @@ REQUIRES = [
     "pyconnectomist>=2.0.0",
     "nipype>=1.0.1",
     "matplotlib>=1.5.1",
-    "nibabel>=1.1.0",
-    "filelock"]
+    "nibabel>=1.1.0"]
 EXTRA_REQUIRES = {
     "wip": {
         "pypreprocess>=0.1.0"

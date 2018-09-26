@@ -20,7 +20,6 @@ from hopla.converter import hopla
 from pypreclin.utils.export import ungzip_file
 from pypreclin.utils.export import gzip_file
 from pypreclin import preproc
-from pypreclin.preproc.jip_controller import call_auto
 
 # Pyconnectome
 import pyconnectome
