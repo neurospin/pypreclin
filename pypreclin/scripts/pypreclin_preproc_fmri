@@ -109,15 +109,15 @@ STEPS = {
     "slice_timing": "1-SliceTiming",
     "warp": "2-B0Inhomogeneities",
     "reorient": "3-Reorient",
-    "undist": "4-Undist",
-    "realign": "5-Realign",
-    "normalization": "6-Normalization",
+    "undist": "X-Undist",
+    "realign": "4-Realign",
+    "normalization": "5-Normalization",
+    "inhomogeneities": "6-Inhomogeneities",
     "coregistration": "7-Coregistration",
-    "inhomogeneities": "8-Inhomogeneities",
-    "wrap": "9-Wrap",
-    "smooth": "10-Smooth",
-    "snaps": "11-Snaps",
-    "report": "12-Report"
+    "wrap": "8-Wrap",
+    "smooth": "9-Smooth",
+    "snaps": "10-Snaps",
+    "report": "11-Report"
 }
 
 
@@ -286,7 +286,7 @@ parser.add_argument(
     help="if set, clean the subject destination folder.")
 parser.add_argument(
     "-d", "--realign-dof",
-    type=int, default=12, metavar="<dof>",
+    type=int, default=6, metavar="<dof>",
     help="the DOF used during the volumes relagnment level.")
 parser.add_argument(
     "-z", "--realign-to-vol",
@@ -644,11 +644,11 @@ if not os.path.isdir(normalization_dir):
 else:
     print("Using cached version in '{0}'.".format(normalization_dir))
     register_anatfile = glob.glob(
-        os.path.join(normalization_dir, "wd*.nii.gz"))[0]
+        os.path.join(normalization_dir, "wdo*.nii.gz"))[0]
     register_anat_maskfile = glob.glob(
-        os.path.join(normalization_dir, "mwd*.nii.gz"))[0]
+        os.path.join(normalization_dir, "mwdo*.nii.gz"))[0]
     native_anat_maskfile = glob.glob(
-        os.path.join(normalization_dir, "nwmwd*.nii.gz"))[0]
+        os.path.join(normalization_dir, "nwmwdo*.nii.gz"))[0]
     align_normfile = os.path.join(normalization_dir, "align.com")
 if args.verbose > 0:
     print("-" * 50)
@@ -658,6 +658,44 @@ if args.verbose > 0:
     print("[result] Masked T1 in native space: {0}.".format(
         native_anat_maskfile))
     print("[result] Alignement file: {0}.".format(align_normfile))
+    print("-" * 50)
+
+
+"""
+Tissues segmentation and spatial intensity variations correction.
+"""
+inhomogeneities_dir = os.path.join(subjdir, STEPS["inhomogeneities"])
+if not os.path.isdir(inhomogeneities_dir):
+    os.mkdir(inhomogeneities_dir)
+    fast_fileroot = os.path.join(
+        inhomogeneities_dir, "fast_" + os.path.basename(
+            native_anat_maskfile).split(".")[0])
+    tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
+        input_file=native_anat_maskfile,
+        out_fileroot=fast_fileroot,
+        klass=3,
+        im_type=1,
+        segments=True,
+        bias_field=True,
+        bias_corrected_im=True,
+        probabilities=True,
+        shfile=fsl_config)
+else:
+    print("Using cached version in '{0}'.".format(inhomogeneities_dir))
+    tpm = glob.glob(os.path.join(inhomogeneities_dir, "*_prob_*.nii.gz"))
+    tsm = glob.glob(os.path.join(inhomogeneities_dir, "*_pve_*.nii.gz"))
+    segmentation_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_seg.nii.gz"))[0]
+    bias_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_bias.nii.gz"))[0]
+    biascorrected_anatfile = glob.glob(
+        os.path.join(inhomogeneities_dir, "*_restore.nii.gz"))[0]
+if args.verbose > 0:
+    print("-" * 50)
+    print("[result] Antomical tissues: {0}.".format(segmentation_anatfile))
+    print("[result] Antomical bias field: {0}.".format(bias_anatfile))
+    print("[result] Antomical bias corrected: {0}.".format(
+        biascorrected_anatfile))
     print("-" * 50)
 
 
@@ -672,7 +710,7 @@ if not os.path.isdir(coregistration_dir):
     (register_func_meanfile, register_func_mean_maskfile,
      native_func_mean_maskfile, align_coregfile) = jip_align(
         source_file=realign_func_meanfile,
-        target_file=native_anat_maskfile,
+        target_file=biascorrected_anatfile,
         outdir=coregistration_dir,
         jipdir=jipdir,
         prefix="w",
@@ -703,44 +741,6 @@ if args.recon2:
     print("[warn] User requested a processing early stop. Remove the 'recon2' "
           "option to resume.")
     sys.exit(0)
-
-
-"""
-Tissues segmentation and spatial intensity variations correction.
-"""
-inhomogeneities_dir = os.path.join(subjdir, STEPS["inhomogeneities"])
-if not os.path.isdir(inhomogeneities_dir):
-    os.mkdir(inhomogeneities_dir)
-    fast_fileroot = os.path.join(
-        inhomogeneities_dir, "fast_" + os.path.basename(
-            register_anat_maskfile).split(".")[0])
-    tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
-        input_file=register_anat_maskfile,
-        out_fileroot=fast_fileroot,
-        klass=3,
-        im_type=1,
-        segments=True,
-        bias_field=True,
-        bias_corrected_im=True,
-        probabilities=True,
-        shfile=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(inhomogeneities_dir))
-    tpm = glob.glob(os.path.join(inhomogeneities_dir, "*_prob_*.nii.gz"))
-    tsm = glob.glob(os.path.join(inhomogeneities_dir, "*_pve_*.nii.gz"))
-    segmentation_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_seg.nii.gz"))[0]
-    bias_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_bias.nii.gz"))[0]
-    biascorrected_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_restore.nii.gz"))[0]
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Antomical tissues: {0}.".format(segmentation_anatfile))
-    print("[result] Antomical bias field: {0}.".format(bias_anatfile))
-    print("[result] Antomical bias corrected: {0}.".format(
-        biascorrected_anatfile))
-    print("-" * 50)
 
 
 """

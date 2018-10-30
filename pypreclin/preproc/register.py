@@ -88,6 +88,7 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
             reference_image = _outfile
 
     # Start volume to volume non rigid registration
+    # TODO: add an argument to select the phase encoding direction
     scriptdir = os.path.join(os.path.dirname(pyconnectome.__file__), "scripts")
     logfile = os.path.join(tmpdir, "log")
     status, exitcodes = hopla(
@@ -102,6 +103,7 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
         J=1,
         N=True,
         B=True,
+        R=[0, 1, 0],
         v=2,
         hopla_iterative_kwargs=["o", "i"],
         hopla_cpus=njobs,
