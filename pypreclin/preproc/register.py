@@ -27,7 +27,8 @@ from pyconnectome.utils.filetools import apply_mask
 from pyconnectome import DEFAULT_FSL_PATH
 
 
-def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
+def timeserie_to_reference(tfile, outdir, rindex=None,
+                           restrict_deformation=(1, 1, 1), rfile=None, njobs=1,
                            clean_tmp=True):
     """ Register all the fMRI volumes to a reference volume identified by his
     index in the timeserie.
@@ -42,6 +43,8 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
         the destination folder.
     rindex: int, default None
         the reference volume index in the timeserie.
+    restrict_deformation: 3-uplet
+        restrict the deformation in the given axis.
     rfile: str, default None
         the reference volume.
     njobs: int, default 1
@@ -103,7 +106,7 @@ def timeserie_to_reference(tfile, outdir, rindex=None, rfile=None, njobs=1,
         J=1,
         N=True,
         B=True,
-        R=[0, 1, 0],
+        R=restrict_deformation,
         v=2,
         hopla_iterative_kwargs=["o", "i"],
         hopla_cpus=njobs,

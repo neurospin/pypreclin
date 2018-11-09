@@ -139,10 +139,10 @@ Steps
 5- Realign: motion correction - adjust for movement between slices (with
    cache).
 6- Normalization: warp images to fit to a standard template brain (with cache).
-7- Coregistration: overlay structural and functional images - link
-   functional scans to anatomical scan (with cache).
-8- Tissues segmentation and spatial intensity variations correction (with
+7- Tissues segmentation and spatial intensity variations correction (with
    cache).
+8- Coregistration: overlay structural and functional images - link
+   functional scans to anatomical scan (with cache).
 9- Wrap functional: resample the functional serie and mask the registered
    serie (with cache).
 10- Smooth the functional time serie (with cache).
@@ -164,6 +164,7 @@ python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -na RAS \
     -nf RIA \
     -k 3 \
+    -wr 0 1 0 \
     -c /etc/fsl/5.0/fsl.sh \
     -j /home/ag239446/local/jip-Linux-x86_64/bin \
     -p /i2bm/local/spm12/ \
@@ -308,6 +309,11 @@ parser.add_argument(
     help="if the '-w' option is set, use this parameter to "
          "specify the reference volume index in the timeserie.")
 parser.add_argument(
+    "-wr", "--warp-restrict",
+    type=int, nargs=3,
+    default=(1, 1, 1),
+    help="restrict the deformation in the given axis.")
+parser.add_argument(
     "-wf", "--warp-file",
     help="if the '-w' option is set, use this parameter to specify the "
          "reference volume to be used.")
@@ -361,7 +367,7 @@ parser.add_argument(
 parser.add_argument(
     "-r1", "--recon1",
     action="store_true",
-    help="run processing steps 1-5 only.")
+    help="run processing steps 1-4 only.")
 parser.add_argument(
     "-r2", "--recon2",
     action="store_true",
@@ -407,6 +413,7 @@ funcfile = args.funcfile
 tr = args.repetitiontime
 spmpath = args.spmpath
 warp = args.warp
+warp_restrict = args.warp_restrict
 warp_index = args.warp_index
 warp_file = args.warp_file
 warp_njobs = args.warp_njobs
@@ -426,8 +433,11 @@ inputs = dict([(name, params[name])
                             "anatbrainthres", "undist", "spmpath",
                             "normalization_trf", "coregistration_trf",
                             "warp", "warp_index", "warp_njobs", "warp_file",
-                            "dof", "realign_to_mean")])
+                            "dof", "realign_to_mean", "warp_restrict")])
 outputs = None
+if args.verbose > 0:
+    print("[info] Inputs:")
+    pprint(inputs)
 if args.erase and os.path.isdir(subjdir):
     shutil.rmtree(subjdir)
 if not os.path.isdir(subjdir):
@@ -472,8 +482,13 @@ if warp:
     if not os.path.isdir(warp_dir):
         os.mkdir(warp_dir)
         b0_corrected_file = timeserie_to_reference(
-            tfile=slice_time_corrected_file, rindex=warp_index, rfile=warp_file,
-            outdir=warp_dir, njobs=warp_njobs, clean_tmp=True)
+            tfile=slice_time_corrected_file,
+            rindex=warp_index,
+            restrict_deformation=warp_restrict,
+            rfile=warp_file,
+            outdir=warp_dir,
+            njobs=warp_njobs,
+            clean_tmp=True)
     else:
         print("Using cached version in '{0}'.".format(warp_dir))
         dir_files = glob.glob(os.path.join(warp_dir, "*.nii.gz"))
