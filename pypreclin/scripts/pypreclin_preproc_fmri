@@ -817,14 +817,11 @@ if args.verbose > 0:
 
 
 """
-JIP uses in radialogical convention, go bback in neurological convention.
+Copy the results to the root directory.
 """
-switch_radiological_neurological(
-    smoothed_file, os.path.join(subjdir, "sMNI.nii"))
-switch_radiological_neurological(
-    register_func_maskfile, os.path.join(subjdir, "MNI.nii"))
-switch_radiological_neurological(
-    register_anat_maskfile, os.path.join(subjdir, "anat.nii"))
+shutil.copy2(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
+shutil.copy2(register_func_maskfile, os.path.join(subjdir, "MNI.nii"))
+shutil.copy2(register_anat_maskfile, os.path.join(subjdir, "anat.nii"))
 
 
 """
