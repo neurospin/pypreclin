@@ -26,19 +26,13 @@ try:
     bredala.USE_PROFILER = False
     bredala.register(
         "pypreclin.utils.reorient",
-        names=["reorient_image", "switch_radiological_neurological"])
-    bredala.register(
-        "pypreclin.utils.reorient",
-        names=["export_interface_results", "reorient_image"])
+        names=["reorient_image", "check_orientation"])
     bredala.register(
         "pypreclin.preproc.register",
         names=["jip_align", "apply_jip_align", "timeserie_to_reference"])
     bredala.register(
         "pypreclin.preproc.undist",
         names=["mc_undist"])
-    bredala.register(
-        "pypreclin.utils.export",
-        names=["gzip_and_update_outputs", "export_interface_results"])
     bredala.register(
         "pypreprocess.reporting.check_preprocessing",
         names=["plot_registration", "plot_segmentation",
@@ -67,7 +61,6 @@ from pypreclin import __version__ as version
 from pypreclin import DEFAULT_SPM_STANDALONE_PATH
 from pypreclin import DEFAULT_FSL_PATH
 from pypreclin.utils.reorient import reorient_image
-from pypreclin.utils.reorient import switch_radiological_neurological
 from pypreclin.preproc.register import jip_align
 from pypreclin.preproc.register import apply_jip_align
 from pypreclin.preproc.register import timeserie_to_reference
@@ -506,7 +499,7 @@ if args.verbose > 0:
 
 
 """
-Reorient images not in RAS coordinate system and
+Reorient images not in LAS coordinate system and
 reorient images to match the orientation of the standard MNI152 template.
 """
 reorient_dir = os.path.join(subjdir, STEPS["reorient"])
@@ -817,11 +810,14 @@ if args.verbose > 0:
 
 
 """
-Copy the results to the root directory.
+Copy the results to the root directory: use Nifti format.
 """
-shutil.copy2(smoothed_file, os.path.join(subjdir, "sMNI.nii"))
-shutil.copy2(register_func_maskfile, os.path.join(subjdir, "MNI.nii"))
-shutil.copy2(register_anat_maskfile, os.path.join(subjdir, "anat.nii"))
+nibabel.load(smoothed_file).to_filename(
+    os.path.join(subjdir, "sMNI.nii"))
+nibabel.load(register_func_maskfile).to_filename(
+    os.path.join(subjdir, "MNI.nii"))
+nibabel.load(register_anat_maskfile).to_filename(
+    os.path.join(subjdir, "anat.nii"))
 
 
 """

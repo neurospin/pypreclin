@@ -17,6 +17,7 @@ import shutil
 from hopla.converter import hopla
 
 # Package import
+from pypreclin.utils.reorient import check_orientation
 from pypreclin.utils.export import ungzip_file
 from pypreclin.utils.export import gzip_file
 from pypreclin import preproc
@@ -174,6 +175,12 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
     native_masked_file: str
         the masked image in the native space.
     """
+    # Check input image orientation: must be the same
+    if not check_orientation([source_file, target_file]):
+        raise ValueError("Source file '{0}' and taget file '{1}' must have "
+                         "the same orientation for JIP to work "
+                         "properly.".format(source_file, target_file))
+
     # Change current working directory
     cwd = os.getcwd()
     os.chdir(outdir)

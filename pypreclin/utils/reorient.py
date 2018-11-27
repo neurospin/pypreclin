@@ -153,3 +153,26 @@ def switch_radiological_neurological(in_file, out_file):
         im.get_data()[::-1, :, :], affine=im.get_affine(),
         header=im.get_header())
     nibabel.save(switch_im, out_file)
+
+
+def check_orientation(in_files):
+    """ Check if the input images have the same orientation.
+
+    Parameters
+    ----------
+    in_files: str or list of str (mandatory)
+        the first input image.
+
+    Returns
+    -------
+    test: bool
+        true if the orientations are the same.
+    """
+    if not isisntance(in_files, list):
+        in_files = [in_files]
+    orients = []
+    for path in in_files:
+        im = nibabel.load(path)
+        orients.append(nibabel.aff2axcodes(im.affine))
+    return all([elem == orients[0] for elem in orients])
+    
