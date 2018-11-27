@@ -168,7 +168,7 @@ def check_orientation(in_files):
     test: bool
         true if the orientations are the same.
     """
-    if not isisntance(in_files, list):
+    if not isinstance(in_files, list):
         in_files = [in_files]
     orients = []
     for path in in_files:

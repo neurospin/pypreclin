@@ -90,6 +90,7 @@ from pyconnectomist import __version__ as pyconnectomist_version
 from pyconnectomist.utils.pdftools import generate_pdf
 
 # Third party import
+import nibabel
 import pylab as plt
 from nipype.interfaces import fsl
 
