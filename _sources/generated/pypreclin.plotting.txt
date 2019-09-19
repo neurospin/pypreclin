@@ -1,0 +1,27 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *pypreclin.plotting*
+==========================================
+
+
+Utility functions to display results.
+
+
+.. raw:: html
+
+    <br/>    <!-- Block section -->
+    <table border='1' class='docutils' style='width:100%'>
+    <colgroup><col width='25%'/><col width='75%'/></colgroup>
+    <tbody valign='top'>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pypreclin.plotting.check_preprocessing.html'><em>pypreclin.plotting.check_preprocessing</em></a></td>
+    <td>
+        <p>Module for generating post-preproc plots (registration, segmentation, etc.)</p>
+    </td>
+    </tr>
+    </tbody>
+
+
+    </table>

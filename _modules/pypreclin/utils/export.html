@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+    <title>PYPRECLIN &mdash; pypreclin</title>
+  <!-- htmltitle is before nature.css - we use this hack to load bootstrap first -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../../_static/css/bootstrap.min.css" media="screen" />
+
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pypreclin" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+  
+   
+       <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../../../_static/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <script src="../../../_static/js/angular.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module("navApp", []);
+    app.controller('navCtrl', ['$scope', '$window', function($scope, $window) {
+      $scope.isActive = function (viewLocation) {
+        var rel = $window.location.pathname.split("/")
+        rel = rel[rel.length - 1]
+        rel = rel.split(".")[0]
+        var active = (viewLocation === rel);
+        return active;};
+    }]);
+  </script>
+
+  </head>
+  <body role="document"><div class="banner">
+  <div class="container-fluid banner-container">
+    <div class="row banner-inner">
+      <div class="col-xs-4">
+        <img alt="Logo" src="../../../_static/pypreclin.png">
+      </div>
+      <div class="col-xs-8">
+            <p>Python processing for PreClinical data.</p>
+      </div>
+    </div>  
+  </div>
+</div><nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+        </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" ng-controller="navCtrl" ng-app="navApp">
+      <ul class="nav navbar-nav">
+        <li ng-class="{ active: isActive('index') }"><a href="../../../index.html">Home</a></li>
+        <li ng-class="{ active: isActive('installation') }"><a href="../../../generated/installation.html">Installation</a></li>
+        <li ng-class="{ active: isActive('gallery') }"><a href="../../../auto_gallery/gallery.html">Gallery</a></li>
+        <li ng-class="{ active: isActive('documentation') }"><a href="../../../generated/documentation.html">API documentation</a></li>
+        <!--<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	        <li><a href="../../../generated/pypreclin.html">Pypreclin</a></li>
+<li><a href="../../../generated/pypreclin.utils.html">Pypreclin.utils</a></li>
+<li><a href="../../../generated/pypreclin.apps.html">Pypreclin.apps</a></li>
+<li><a href="../../../generated/pypreclin.plotting.html">Pypreclin.plotting</a></li>
+<li><a href="../../../generated/pypreclin.workflow.html">Pypreclin.workflow</a></li>
+<li><a href="../../../generated/pypreclin.preproc.html">Pypreclin.preproc</a></li>
+          </ul>
+        </li>-->
+        <li><a href="http://www.unicog.org/site_2016/">UNICOG</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="content-wrapper">
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+
+        <!-- info setup -->
+          <p class="doc-version">
+           This documentation is for pypreclin <strong>version 1.0.0</strong>
+          </p>
+        <p class="citing">
+          If you use the software, please do not hesitate to 
+          <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+          Report a Bug</a>.
+        </p>
+
+      <!-- toc tree -->
+      
+
+      </div>
+    </div>
+  
+
+  <div class="content">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypreclin.utils.export</h1><div class="highlight"><pre>
+<span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2016</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module that contains export utilities.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># System import</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+
+
+<div class="viewcode-block" id="gzip_and_update_outputs"><a class="viewcode-back" href="../../../generated/pypreclin.utils.export.html#pypreclin.utils.export.gzip_and_update_outputs">[docs]</a><span class="k">def</span> <span class="nf">gzip_and_update_outputs</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compress file and update the result outputs accordingly. Note that</span>
+<span class="sd">    a simplified results structure as produced by the</span>
+<span class="sd">    &#39;export_interface_results&#39; function is expected.</span>
+
+<span class="sd">    Note that the results structure will be updated (ie modified) by the</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results: dict (mandatory)</span>
+<span class="sd">        a results structure with process name as keys and process results</span>
+<span class="sd">        as values. Each process values is expected to contain an &#39;outputs&#39;</span>
+<span class="sd">        key containing a dictionary mapping of the process outputs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">process_name</span><span class="p">,</span> <span class="n">results</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">updated_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+               <span class="n">results</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursive_gzip</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">])</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursive_gzip</span><span class="p">(</span><span class="n">param</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="recursive_gzip"><a class="viewcode-back" href="../../../generated/pypreclin.utils.export.html#pypreclin.utils.export.recursive_gzip">[docs]</a><span class="k">def</span> <span class="nf">recursive_gzip</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Recursively find and Gzip files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj: object (mandatory)</span>
+<span class="sd">        a Python object containing files to Gzip.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gzip_obj: object</span>
+<span class="sd">        the input object with Gziped files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Stop case: a non iterative structure is reached</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">gzip_file</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                         <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c1"># Go deeper</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">gzip_obj</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">gzip_obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recursive_gzip</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">gzip_obj</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">gzip_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gzip_obj</span>
+
+    <span class="c1"># Default return object</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="ungzip_file"><a class="viewcode-back" href="../../../generated/pypreclin.utils.export.html#pypreclin.utils.export.ungzip_file">[docs]</a><span class="k">def</span> <span class="nf">ungzip_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Copy and ungzip the input file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname: str (mandatory)</span>
+<span class="sd">        an input file to ungzip.</span>
+<span class="sd">    prefix: str (optional, default &#39;u&#39;)</span>
+<span class="sd">        the prefix of the result file.</span>
+<span class="sd">    outdir: str (optional, default None)</span>
+<span class="sd">        the output directory where ungzip file is saved.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ungzipfname: str</span>
+<span class="sd">        the returned ungzip file.</span>
+<span class="sd">    &lt;/unit&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check the input file exists on the file system</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;{0}&#39; is not a valid filename.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
+
+    <span class="c1"># Check that the outdir is valid</span>
+    <span class="k">if</span> <span class="n">outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;{0}&#39; is not a valid directory.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># Get the file descriptors</span>
+    <span class="n">base</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+    <span class="c1"># Ungzip only known extension</span>
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.gz&quot;</span><span class="p">]:</span>
+
+        <span class="c1"># Generate the output file name</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">basename</span>
+        <span class="n">ungzipfname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+
+        <span class="c1"># Read the input gzip file</span>
+        <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzfobj</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">gzfobj</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c1"># Write the output ungzip file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ungzipfname</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">openfile</span><span class="p">:</span>
+            <span class="n">openfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Default, unknown compression extension: the input file is returned</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ungzipfname</span> <span class="o">=</span> <span class="n">fname</span>
+
+    <span class="k">return</span> <span class="n">ungzipfname</span></div>
+
+
+<div class="viewcode-block" id="gzip_file"><a class="viewcode-back" href="../../../generated/pypreclin.utils.export.html#pypreclin.utils.export.gzip_file">[docs]</a><span class="k">def</span> <span class="nf">gzip_file</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+              <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Gzip an input file and possibly remove the original file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ungzip_file: str (mandatory)</span>
+<span class="sd">        an input file to gzip.</span>
+<span class="sd">    prefix: str (optional, default &#39;g&#39;)</span>
+<span class="sd">        a prefix that will be concatenated to the produced file basename.</span>
+<span class="sd">    outdir: str (optional, default None)</span>
+<span class="sd">        the destination folder where the Gzip file is saved. If this parameter</span>
+<span class="sd">        is None, the input image folder is considered as an output folder.</span>
+<span class="sd">    remove_original_file: bool (optiona, default False)</span>
+<span class="sd">        if True, remove the original file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gzip_file: str</span>
+<span class="sd">        the returned Gzip file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check the input file exists on the file system</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;{0}&#39; is not a valid filename.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">))</span>
+
+    <span class="c1"># Check that the outdir is valid</span>
+    <span class="k">if</span> <span class="n">outdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;{0}&#39; is not a valid directory.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">)</span>
+
+    <span class="c1"># Get the file descriptors</span>
+    <span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">)</span>
+    <span class="n">base</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
+
+    <span class="c1"># Gzip only non compressed file</span>
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;.mat&quot;</span><span class="p">,</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.txt&quot;</span><span class="p">]:</span>
+
+        <span class="c1"># Generate the output file name</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">extension</span> <span class="o">+</span> <span class="s2">&quot;.gz&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">basename</span>
+        <span class="n">gzip_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+
+        <span class="c1"># Write the output gzip file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">openfile</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">gzip_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">gzfobj</span><span class="p">:</span>
+                <span class="n">gzfobj</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">openfile</span><span class="p">)</span>
+
+        <span class="c1"># Remove original file if requested</span>
+        <span class="k">if</span> <span class="n">remove_original_file</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ungzip_file</span><span class="p">)</span>
+
+    <span class="c1"># Default, the input file is returned</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gzip_file</span> <span class="o">=</span> <span class="n">ungzip_file</span>
+
+    <span class="k">return</span> <span class="n">gzip_file</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    <div class="clearer">
+    </div>
+  </div>
+  
+</div>
+
+<div class="footer">
+    &copy; 2019, 
+Antoine Grigis &lt;antoine.grigis@cea.fr&gt;
+Jordy Tasserie &lt;jordy.tasserie@cea.fr&gt;
+Bechir Jarraya &lt;bechir.jarraya@cea.fr&gt;
+ &lt;antoine.grigis@cea.fr&gt;.
+</div>
+  </body>
+</html>

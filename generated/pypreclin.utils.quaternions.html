@@ -1,0 +1,594 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+    <title>PYPRECLIN &mdash; pypreclin</title>
+  <!-- htmltitle is before nature.css - we use this hack to load bootstrap first -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../_static/css/bootstrap.min.css" media="screen" />
+
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pypreclin" href="../index.html" />
+  
+   
+       <script type="text/javascript" src="../_static/sidebar.js"></script>
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../_static/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <script src="../_static/js/angular.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module("navApp", []);
+    app.controller('navCtrl', ['$scope', '$window', function($scope, $window) {
+      $scope.isActive = function (viewLocation) {
+        var rel = $window.location.pathname.split("/")
+        rel = rel[rel.length - 1]
+        rel = rel.split(".")[0]
+        var active = (viewLocation === rel);
+        return active;};
+    }]);
+  </script>
+
+  </head>
+  <body role="document"><div class="banner">
+  <div class="container-fluid banner-container">
+    <div class="row banner-inner">
+      <div class="col-xs-4">
+        <img alt="Logo" src="../_static/pypreclin.png">
+      </div>
+      <div class="col-xs-8">
+            <p>Python processing for PreClinical data.</p>
+      </div>
+    </div>  
+  </div>
+</div><nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+        </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" ng-controller="navCtrl" ng-app="navApp">
+      <ul class="nav navbar-nav">
+        <li ng-class="{ active: isActive('index') }"><a href="../index.html">Home</a></li>
+        <li ng-class="{ active: isActive('installation') }"><a href="installation.html">Installation</a></li>
+        <li ng-class="{ active: isActive('gallery') }"><a href="../auto_gallery/gallery.html">Gallery</a></li>
+        <li ng-class="{ active: isActive('documentation') }"><a href="documentation.html">API documentation</a></li>
+        <!--<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	        <li><a href="pypreclin.html">Pypreclin</a></li>
+<li><a href="pypreclin.utils.html">Pypreclin.utils</a></li>
+<li><a href="pypreclin.apps.html">Pypreclin.apps</a></li>
+<li><a href="pypreclin.plotting.html">Pypreclin.plotting</a></li>
+<li><a href="pypreclin.workflow.html">Pypreclin.workflow</a></li>
+<li><a href="pypreclin.preproc.html">Pypreclin.preproc</a></li>
+          </ul>
+        </li>-->
+        <li><a href="http://www.unicog.org/site_2016/">UNICOG</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="content-wrapper">
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+
+        <!-- info setup -->
+          <p class="doc-version">
+           This documentation is for pypreclin <strong>version 1.0.0</strong>
+          </p>
+        <p class="citing">
+          If you use the software, please do not hesitate to 
+          <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+          Report a Bug</a>.
+        </p>
+
+      <!-- toc tree -->
+      <ul class="simple">
+</ul>
+
+
+      </div>
+    </div>
+  
+
+  <div class="content">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="module-pypreclin.utils.quaternions"></span><p>Functions to operate on, or return, quaternions.</p>
+<p>The module also includes functions for the closely related angle, axis
+pair as a specification for rotation.</p>
+<p>Quaternions here consist of 4 values <code class="docutils literal"><span class="pre">w,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, where <code class="docutils literal"><span class="pre">w</span></code> is the
+real (scalar) part, and <code class="docutils literal"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code> are the complex (vector) part.</p>
+<p>Note - rotation matrices here apply to column vectors, that is,
+they are applied on the left of the vector.  For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># 180 degree rotation around axis 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">quat2mat</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="c1"># from this module</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="c1"># column vector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">vec</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.axangle2quat">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">axangle2quat</code><span class="sig-paren">(</span><em>vector</em>, <em>theta</em>, <em>is_normalized=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#axangle2quat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.axangle2quat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quaternion for rotation of angle <cite>theta</cite> around <cite>vector</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : 3 element sequence</p>
+<blockquote>
+<div><p>vector specifying axis for rotation.</p>
+</div></blockquote>
+<p><strong>theta</strong> : scalar</p>
+<blockquote>
+<div><p>angle of rotation</p>
+</div></blockquote>
+<p><strong>is_normalized</strong> : bool, optional</p>
+<blockquote>
+<div><p>True if vector is already normalized (has norm of 1).  Default
+False</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>quat</strong> : 4 element sequence of symbols</p>
+<blockquote class="last">
+<div><p>quaternion giving specified rotation</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Formula from <a class="reference external" href="http://mathworld.wolfram.com/EulerParameters.html">http://mathworld.wolfram.com/EulerParameters.html</a></p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">axangle2quat</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.axangle2rmat">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">axangle2rmat</code><span class="sig-paren">(</span><em>vector</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#axangle2rmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.axangle2rmat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation matrix of angle <cite>theta</cite> around <cite>vector</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>vector</strong> : 3 element sequence</p>
+<blockquote>
+<div><p>vector specifying axis for rotation.</p>
+</div></blockquote>
+<p><strong>theta</strong> : scalar</p>
+<blockquote>
+<div><p>angle of rotation</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>mat</strong> : array shape (3,3)</p>
+<blockquote class="last">
+<div><p>rotation matrix specified rotation</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>From: <a class="reference external" href="http://en.wikipedia.org/wiki/Rotation_matrix#Axis_and_angle">http://en.wikipedia.org/wiki/Rotation_matrix#Axis_and_angle</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.conjugate">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">conjugate</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#conjugate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conjugate of quaternion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, i, j, k of quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>conjq</strong> : array shape (4,)</p>
+<blockquote class="last">
+<div><p>w, i, j, k of conjugate of <cite>q</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.eye">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">eye</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#eye"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.eye" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return identity quaternion</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.fillpositive">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">fillpositive</code><span class="sig-paren">(</span><em>xyz</em>, <em>w2_thresh=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#fillpositive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.fillpositive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute unit quaternion from last 3 values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>xyz</strong> : iterable</p>
+<blockquote>
+<div><p>iterable containing 3 values, corresponding to quaternion x, y, z</p>
+</div></blockquote>
+<p><strong>w2_thresh</strong> : None or float, optional</p>
+<blockquote>
+<div><p>threshold to determine if w squared is really negative.
+If None (default) then w2_thresh set equal to
+<code class="docutils literal"><span class="pre">-np.finfo(xyz.dtype).eps</span></code>, if possible, otherwise
+<code class="docutils literal"><span class="pre">-np.finfo(np.float).eps</span></code></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>wxyz</strong> : array shape (4,)</p>
+<blockquote class="last">
+<div><p>Full 4 values of quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If w, x, y, z are the values in the full quaternion, assumes w is
+positive.</p>
+<p>Gives error if w*w is estimated to be negative</p>
+<p>w = 0 corresponds to a 180 degree rotation</p>
+<p>The unit quaternion specifies that np.dot(wxyz, wxyz) == 1.</p>
+<p>If w is positive (assumed here), w is given by:</p>
+<p>w = np.sqrt(1.0-(x*x+y*y+z*z))</p>
+<p>w2 = 1.0-(x*x+y*y+z*z) can be near zero, which will lead to
+numerical instability in sqrt.  Here we use the system maximum
+float type to reduce numerical instability</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wxyz</span> <span class="o">=</span> <span class="n">fillpositive</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">wxyz</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wxyz</span> <span class="o">=</span> <span class="n">fillpositive</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># Corner case; w is 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">wxyz</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wxyz</span><span class="p">,</span> <span class="n">wxyz</span><span class="p">)</span>
+<span class="go">1.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.inverse">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">inverse</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#inverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.inverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return multiplicative inverse of quaternion <cite>q</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, i, j, k of quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>invq</strong> : array shape (4,)</p>
+<blockquote class="last">
+<div><p>w, i, j, k of quaternion inverse</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.isunit">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">isunit</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#isunit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.isunit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True is this is very nearly a unit quaternion</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.mat2quat">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">mat2quat</code><span class="sig-paren">(</span><em>M</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#mat2quat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.mat2quat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate quaternion corresponding to given rotation matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>M</strong> : array-like</p>
+<blockquote>
+<div><p>3x3 rotation matrix</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>q</strong> : (4,) array</p>
+<blockquote class="last">
+<div><p>closest quaternion to input matrix, having positive q[0]</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Rotation_matrix#Quaternion">http://en.wikipedia.org/wiki/Rotation_matrix#Quaternion</a></p>
+<p>Bar-Itzhack, Itzhack Y. (2000), &#8220;New method for extracting the
+quaternion from a rotation matrix&#8221;, AIAA Journal of Guidance,
+Control and Dynamics 23(6):1085-1087 (Engineering Note), ISSN
+0731-5090</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">mat2quat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="c1"># Identity rotation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">mat2quat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="c1"># 180 degree rotn around axis 0</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.mult">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">mult</code><span class="sig-paren">(</span><em>q1</em>, <em>q2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#mult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.mult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply two quaternions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q1</strong> : 4 element sequence</p>
+<p><strong>q2</strong> : 4 element sequence</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>q12</strong> : shape (4,) array</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>See : <a class="reference external" href="http://en.wikipedia.org/wiki/Quaternions#Hamilton_product">http://en.wikipedia.org/wiki/Quaternions#Hamilton_product</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.nearly_equivalent">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">nearly_equivalent</code><span class="sig-paren">(</span><em>q1</em>, <em>q2</em>, <em>rtol=1e-05</em>, <em>atol=1e-08</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#nearly_equivalent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.nearly_equivalent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if <cite>q1</cite> and <cite>q2</cite> give near equivalent transforms</p>
+<p>q1 may be nearly numerically equal to q2, or nearly equal to q2 * -1
+(becuase a quaternion multiplied by -1 gives the same transform).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q1</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, x, y, z of first quaternion</p>
+</div></blockquote>
+<p><strong>q2</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, x, y, z of second quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>equiv</strong> : bool</p>
+<blockquote class="last">
+<div><p>True if <cite>q1</cite> and <cite>q2</cite> are nearly equivalent, False otherwise</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nearly_equivalent</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nearly_equivalent</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nearly_equivalent</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.norm">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">norm</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return norm of quaternion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, i, j, k of quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>n</strong> : scalar</p>
+<blockquote class="last">
+<div><p>quaternion norm</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.quat2axangle">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">quat2axangle</code><span class="sig-paren">(</span><em>quat</em>, <em>identity_thresh=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#quat2axangle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.quat2axangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert quaternion to rotation of angle around axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>quat</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, x, y, z forming quaternion</p>
+</div></blockquote>
+<p><strong>identity_thresh</strong> : None or scalar, optional</p>
+<blockquote>
+<div><p>threshold below which the norm of the vector part of the
+quaternion (x, y, z) is deemed to be 0, leading to the identity
+rotation.  None (the default) leads to a threshold estimated
+based on the precision of the input.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>theta</strong> : scalar</p>
+<blockquote>
+<div><p>angle of rotation</p>
+</div></blockquote>
+<p><strong>vector</strong> : array shape (3,)</p>
+<blockquote class="last">
+<div><p>axis around which rotation occurs</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>A quaternion for which x, y, z are all equal to 0, is an identity
+rotation.  In this case we return a 0 angle and an  arbitrary 
+vector, here [1, 0, 0]</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">quat2axangle</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span>
+<span class="go">array([ 1.,  0.,  0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>If this is an identity rotation, we return a zero angle and an
+arbitrary vector</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">quat2axangle</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="go">(array([ 1.,  0.,  0.]), 0.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.quat2mat">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">quat2mat</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#quat2mat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.quat2mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate rotation matrix corresponding to quaternion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>q</strong> : 4 element array-like</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>M</strong> : (3,3) array</p>
+<blockquote class="last">
+<div><p>Rotation matrix corresponding to input quaternion <em>q</em></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Rotation matrix applies to column vectors, and is applied to the
+left of coordinate vectors.  The algorithm here allows non-unit
+quaternions.</p>
+<p class="rubric">References</p>
+<p>Algorithm from 
+<a class="reference external" href="http://en.wikipedia.org/wiki/Rotation_matrix#Quaternion">http://en.wikipedia.org/wiki/Rotation_matrix#Quaternion</a></p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">quat2mat</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="c1"># Identity quaternion</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">quat2mat</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="c1"># 180 degree rotn around axis 0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.utils.quaternions.rotate_vector">
+<code class="descclassname">pypreclin.utils.quaternions.</code><code class="descname">rotate_vector</code><span class="sig-paren">(</span><em>v</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/utils/quaternions.html#rotate_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.utils.quaternions.rotate_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply transformation in quaternion <cite>q</cite> to vector <cite>v</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>v</strong> : 3 element sequence</p>
+<blockquote>
+<div><p>3 dimensional vector</p>
+</div></blockquote>
+<p><strong>q</strong> : 4 element sequence</p>
+<blockquote>
+<div><p>w, i, j, k of quaternion</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>vdash</strong> : array shape (3,)</p>
+<blockquote class="last">
+<div><p><cite>v</cite> rotated by quaternion <cite>q</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>See: <a class="reference external" href="http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Describing_rotations_with_quaternions">http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Describing_rotations_with_quaternions</a></p>
+</dd></dl>
+
+
+
+          </div>
+        </div>
+      </div>
+
+    <div class="clearer">
+    </div>
+  </div>
+  
+</div>
+
+<div class="footer">
+    &copy; 2019, 
+Antoine Grigis &lt;antoine.grigis@cea.fr&gt;
+Jordy Tasserie &lt;jordy.tasserie@cea.fr&gt;
+Bechir Jarraya &lt;bechir.jarraya@cea.fr&gt;
+ &lt;antoine.grigis@cea.fr&gt;.
+</div>
+  </body>
+</html>

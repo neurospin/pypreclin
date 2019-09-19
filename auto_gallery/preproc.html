@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+    <title>PYPRECLIN &mdash; pypreclin</title>
+  <!-- htmltitle is before nature.css - we use this hack to load bootstrap first -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../_static/css/bootstrap.min.css" media="screen" />
+
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pypreclin" href="../index.html" />
+  
+   
+       <script type="text/javascript" src="../_static/sidebar.js"></script>
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../_static/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <script src="../_static/js/angular.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module("navApp", []);
+    app.controller('navCtrl', ['$scope', '$window', function($scope, $window) {
+      $scope.isActive = function (viewLocation) {
+        var rel = $window.location.pathname.split("/")
+        rel = rel[rel.length - 1]
+        rel = rel.split(".")[0]
+        var active = (viewLocation === rel);
+        return active;};
+    }]);
+  </script>
+
+  </head>
+  <body role="document"><div class="banner">
+  <div class="container-fluid banner-container">
+    <div class="row banner-inner">
+      <div class="col-xs-4">
+        <img alt="Logo" src="../_static/pypreclin.png">
+      </div>
+      <div class="col-xs-8">
+            <p>Python processing for PreClinical data.</p>
+      </div>
+    </div>  
+  </div>
+</div><nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+        </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" ng-controller="navCtrl" ng-app="navApp">
+      <ul class="nav navbar-nav">
+        <li ng-class="{ active: isActive('index') }"><a href="../index.html">Home</a></li>
+        <li ng-class="{ active: isActive('installation') }"><a href="../generated/installation.html">Installation</a></li>
+        <li ng-class="{ active: isActive('gallery') }"><a href="gallery.html">Gallery</a></li>
+        <li ng-class="{ active: isActive('documentation') }"><a href="../generated/documentation.html">API documentation</a></li>
+        <!--<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	        <li><a href="../generated/pypreclin.html">Pypreclin</a></li>
+<li><a href="../generated/pypreclin.utils.html">Pypreclin.utils</a></li>
+<li><a href="../generated/pypreclin.apps.html">Pypreclin.apps</a></li>
+<li><a href="../generated/pypreclin.plotting.html">Pypreclin.plotting</a></li>
+<li><a href="../generated/pypreclin.workflow.html">Pypreclin.workflow</a></li>
+<li><a href="../generated/pypreclin.preproc.html">Pypreclin.preproc</a></li>
+          </ul>
+        </li>-->
+        <li><a href="http://www.unicog.org/site_2016/">UNICOG</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="content-wrapper">
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+
+        <!-- info setup -->
+          <p class="doc-version">
+           This documentation is for pypreclin <strong>version 1.0.0</strong>
+          </p>
+        <p class="citing">
+          If you use the software, please do not hesitate to 
+          <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+          Report a Bug</a>.
+        </p>
+
+      <!-- toc tree -->
+      <ul>
+<li><a class="reference internal" href="#">pypreclin preprocessing</a><ul>
+<li><a class="reference internal" href="#first-checks">First checks</a></li>
+<li><a class="reference internal" href="#load-a-test-dataset">Load a test dataset</a></li>
+<li><a class="reference internal" href="#run">Run</a></li>
+</ul>
+</li>
+</ul>
+
+
+      </div>
+    </div>
+  
+
+  <div class="content">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pypreclin-preprocessing">
+<span id="sphx-glr-auto-gallery-preproc-py"></span><h1>pypreclin preprocessing<a class="headerlink" href="#pypreclin-preprocessing" title="Permalink to this headline">¶</a></h1>
+<p>Credit: A Grigis &amp; J Tasserie</p>
+<p>WORK IN PROGRESS</p>
+<p>The preprocessing and analysis of nonhuman primate (NHP) magnetic resonance
+imaging (MRI) data presents some unique challenges.</p>
+<ol class="arabic simple">
+<li>non standard orientation, sphinx position.</li>
+<li>strong intensity bias.</li>
+<li>non brain tissues.</li>
+</ol>
+<p>Over the years, we have created our own custom solution that solves these
+problems.</p>
+<p>This example shows how to preprocess a functional timeserie without
+fielmap or reverse phase encoded images. One can inpsect the called function to
+apply only a single step.</p>
+<div class="section" id="first-checks">
+<h2>First checks<a class="headerlink" href="#first-checks" title="Permalink to this headline">¶</a></h2>
+<p>In order to test if the &#8216;pypreclin&#8217; package is installed on your machine, you
+can try to import it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pypreclin.workflow.preproc_fmri</span> <span class="kn">import</span> <span class="n">prepoc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="load-a-test-dataset">
+<h2>Load a test dataset<a class="headerlink" href="#load-a-test-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Now load a toy single run dataset with 10 volumes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rootdir</span> <span class="o">=</span> <span class="s2">&quot;/tmp&quot;</span>
+<span class="n">funcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">anatfile</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">outdir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">jipdir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run">
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
+<p>Finally run all the prepocessing steps. In order to avoid the installation
+of all dependencies, please use the provided container.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="n">preproc</span><span class="p">(</span>
+        <span class="n">funcfile</span><span class="o">=</span><span class="n">funcfile</span><span class="p">,</span>
+        <span class="n">anatfile</span><span class="o">=</span><span class="n">anatfile</span><span class="p">,</span>
+        <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
+        <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span>
+        <span class="n">repetitiontime</span><span class="o">=</span><span class="n">tr</span><span class="p">,</span>
+        <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+        <span class="n">jipdir</span><span class="o">=</span><span class="s2">&quot;/jip/bin&quot;</span><span class="p">,</span>
+        <span class="n">erase</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">interleaved</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">sliceorder</span><span class="o">=</span><span class="s2">&quot;ascending&quot;</span><span class="p">,</span>
+        <span class="n">realign_dof</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">realign_to_vol</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">warp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">warp_njobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">warp_index</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">warp_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">warp_restrict</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">anatorient</span><span class="o">=</span><span class="s2">&quot;RAS&quot;</span><span class="p">,</span>
+        <span class="n">funcorient</span><span class="o">=</span><span class="s2">&quot;RAS&quot;</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">fslconfig</span><span class="o">=</span><span class="s2">&quot;/etc/fsl/5.0.11/fsl.sh&quot;</span><span class="p">,</span>
+        <span class="n">normalization_trf</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">coregistration_trf</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">recon1</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">recon2</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">auto</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/preproc.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">preproc.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/preproc.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">preproc.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature">Gallery generated by Sphinx-Gallery</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+
+    <div class="clearer">
+    </div>
+  </div>
+  
+</div>
+
+<div class="footer">
+    &copy; 2019, 
+Antoine Grigis &lt;antoine.grigis@cea.fr&gt;
+Jordy Tasserie &lt;jordy.tasserie@cea.fr&gt;
+Bechir Jarraya &lt;bechir.jarraya@cea.fr&gt;
+ &lt;antoine.grigis@cea.fr&gt;.
+</div>
+  </body>
+</html>

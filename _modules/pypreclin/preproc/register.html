@@ -1,0 +1,609 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+    <title>PYPRECLIN &mdash; pypreclin</title>
+  <!-- htmltitle is before nature.css - we use this hack to load bootstrap first -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../../_static/css/bootstrap.min.css" media="screen" />
+
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pypreclin" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+  
+   
+       <script type="text/javascript" src="../../../_static/sidebar.js"></script>
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../../../_static/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <script src="../../../_static/js/angular.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module("navApp", []);
+    app.controller('navCtrl', ['$scope', '$window', function($scope, $window) {
+      $scope.isActive = function (viewLocation) {
+        var rel = $window.location.pathname.split("/")
+        rel = rel[rel.length - 1]
+        rel = rel.split(".")[0]
+        var active = (viewLocation === rel);
+        return active;};
+    }]);
+  </script>
+
+  </head>
+  <body role="document"><div class="banner">
+  <div class="container-fluid banner-container">
+    <div class="row banner-inner">
+      <div class="col-xs-4">
+        <img alt="Logo" src="../../../_static/pypreclin.png">
+      </div>
+      <div class="col-xs-8">
+            <p>Python processing for PreClinical data.</p>
+      </div>
+    </div>  
+  </div>
+</div><nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+        </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" ng-controller="navCtrl" ng-app="navApp">
+      <ul class="nav navbar-nav">
+        <li ng-class="{ active: isActive('index') }"><a href="../../../index.html">Home</a></li>
+        <li ng-class="{ active: isActive('installation') }"><a href="../../../generated/installation.html">Installation</a></li>
+        <li ng-class="{ active: isActive('gallery') }"><a href="../../../auto_gallery/gallery.html">Gallery</a></li>
+        <li ng-class="{ active: isActive('documentation') }"><a href="../../../generated/documentation.html">API documentation</a></li>
+        <!--<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	        <li><a href="../../../generated/pypreclin.html">Pypreclin</a></li>
+<li><a href="../../../generated/pypreclin.utils.html">Pypreclin.utils</a></li>
+<li><a href="../../../generated/pypreclin.apps.html">Pypreclin.apps</a></li>
+<li><a href="../../../generated/pypreclin.plotting.html">Pypreclin.plotting</a></li>
+<li><a href="../../../generated/pypreclin.workflow.html">Pypreclin.workflow</a></li>
+<li><a href="../../../generated/pypreclin.preproc.html">Pypreclin.preproc</a></li>
+          </ul>
+        </li>-->
+        <li><a href="http://www.unicog.org/site_2016/">UNICOG</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="content-wrapper">
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+
+        <!-- info setup -->
+          <p class="doc-version">
+           This documentation is for pypreclin <strong>version 1.0.0</strong>
+          </p>
+        <p class="citing">
+          If you use the software, please do not hesitate to 
+          <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+          Report a Bug</a>.
+        </p>
+
+      <!-- toc tree -->
+      
+
+      </div>
+    </div>
+  
+
+  <div class="content">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypreclin.preproc.register</h1><div class="highlight"><pre>
+<span class="c1">##########################################################################</span>
+<span class="c1"># NSAp - Copyright (C) CEA, 2013 - 2016</span>
+<span class="c1"># Distributed under the terms of the CeCILL-B license, as published by</span>
+<span class="c1"># the CEA-CNRS-INRIA. Refer to the LICENSE file or to</span>
+<span class="c1"># http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html</span>
+<span class="c1"># for details.</span>
+<span class="c1">##########################################################################</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Registration utilities.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># System import</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">nibabel</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="c1"># Hopla import</span>
+<span class="kn">from</span> <span class="nn">hopla.converter</span> <span class="kn">import</span> <span class="n">hopla</span>
+
+<span class="c1"># Package import</span>
+<span class="kn">from</span> <span class="nn">pypreclin.utils.reorient</span> <span class="kn">import</span> <span class="n">check_orientation</span>
+<span class="kn">from</span> <span class="nn">pypreclin.utils.export</span> <span class="kn">import</span> <span class="n">ungzip_file</span>
+<span class="kn">from</span> <span class="nn">pypreclin.utils.export</span> <span class="kn">import</span> <span class="n">gzip_file</span>
+<span class="kn">from</span> <span class="nn">pypreclin.utils.reorient</span> <span class="kn">import</span> <span class="n">swap_affine</span>
+<span class="kn">from</span> <span class="nn">pypreclin</span> <span class="kn">import</span> <span class="n">preproc</span>
+
+<span class="c1"># Third party import</span>
+<span class="kn">import</span> <span class="nn">pyconnectome</span>
+<span class="kn">from</span> <span class="nn">pyconnectome.utils.filetools</span> <span class="kn">import</span> <span class="n">apply_mask</span>
+<span class="kn">from</span> <span class="nn">pyconnectome</span> <span class="kn">import</span> <span class="n">DEFAULT_FSL_PATH</span>
+<span class="kn">from</span> <span class="nn">pyconnectome.utils.regtools</span> <span class="kn">import</span> <span class="n">flirt</span>
+<span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="kn">import</span> <span class="n">AffineInitializer</span>
+<span class="kn">from</span> <span class="nn">nipype.interfaces.ants</span> <span class="kn">import</span> <span class="n">ApplyTransforms</span>
+<span class="kn">from</span> <span class="nn">transforms3d.affines</span> <span class="kn">import</span> <span class="n">decompose44</span>
+<span class="kn">from</span> <span class="nn">transforms3d.euler</span> <span class="kn">import</span> <span class="n">mat2euler</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
+<span class="kn">import</span> <span class="nn">nibabel</span>
+
+
+<div class="viewcode-block" id="timeserie_to_reference"><a class="viewcode-back" href="../../../generated/pypreclin.preproc.register.html#pypreclin.preproc.register.timeserie_to_reference">[docs]</a><span class="k">def</span> <span class="nf">timeserie_to_reference</span><span class="p">(</span><span class="n">tfile</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">rindex</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                           <span class="n">restrict_deformation</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">rfile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">njobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                           <span class="n">clean_tmp</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Register all the fMRI volumes to a reference volume identified by his</span>
+<span class="sd">    index in the timeserie.</span>
+
+<span class="sd">    The registration used is a non-linear regisration.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tfile: str</span>
+<span class="sd">        the file that containes the timeserie.</span>
+<span class="sd">    outdir: str</span>
+<span class="sd">        the destination folder.</span>
+<span class="sd">    rindex: int, default None</span>
+<span class="sd">        the reference volume index in the timeserie.</span>
+<span class="sd">    restrict_deformation: 3-uplet</span>
+<span class="sd">        restrict the deformation in the given axis.</span>
+<span class="sd">    rfile: str, default None</span>
+<span class="sd">        the reference volume.</span>
+<span class="sd">    njobs: int, default 1</span>
+<span class="sd">        the desired number of parallel job during the registration.</span>
+<span class="sd">    clean_tmp: bool, default True</span>
+<span class="sd">        if set, clean the temporary results.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    resfile: str</span>
+<span class="sd">        the registration result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check input index</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tfile</span><span class="p">)</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A timeserie (4d volume) is expected.&quot;</span><span class="p">)</span>
+    <span class="n">reference_image</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">rindex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rindex</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">rindex</span> <span class="o">&gt;</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Index &#39;{0}&#39; is out of bound considering the last dimension &quot;</span>
+                <span class="s2">&quot;as the time dimension &#39;{1}&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rindex</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">rfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">reference_image</span> <span class="o">=</span> <span class="n">rfile</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You need to specify a reference file or index.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Split the timeserie</span>
+    <span class="n">tmpdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;tmp&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span>
+    <span class="n">moving_images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">outdirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+        <span class="n">_im</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="n">_outfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.nii.gz&quot;</span><span class="p">)</span>
+        <span class="n">outdirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdirs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">outdirs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">nibabel</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">_im</span><span class="p">,</span> <span class="n">_outfile</span><span class="p">)</span>
+        <span class="n">moving_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_outfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reference_image</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">rindex</span><span class="p">:</span>
+            <span class="n">reference_image</span> <span class="o">=</span> <span class="n">_outfile</span>
+
+    <span class="c1"># Start volume to volume non rigid registration</span>
+    <span class="n">scriptdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pyconnectome</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s2">&quot;scripts&quot;</span><span class="p">)</span>
+    <span class="n">script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scriptdir</span><span class="p">,</span> <span class="s2">&quot;pyconnectome_ants_register&quot;</span><span class="p">)</span>
+    <span class="n">python_cmd</span> <span class="o">=</span> <span class="s2">&quot;python3&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">script</span><span class="p">):</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="s2">&quot;pyconnectome_ants_register&quot;</span>
+        <span class="n">python_cmd</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">logfile</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">exitcodes</span> <span class="o">=</span> <span class="n">hopla</span><span class="p">(</span>
+        <span class="n">script</span><span class="p">,</span>
+        <span class="n">b</span><span class="o">=</span><span class="s2">&quot;/usr/lib/ants&quot;</span><span class="p">,</span>
+        <span class="n">o</span><span class="o">=</span><span class="n">outdirs</span><span class="p">,</span>
+        <span class="n">i</span><span class="o">=</span><span class="n">moving_images</span><span class="p">,</span>
+        <span class="n">r</span><span class="o">=</span><span class="n">reference_image</span><span class="p">,</span>
+        <span class="n">w</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">D</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">G</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">J</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">N</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">B</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">R</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">restrict_deformation</span><span class="p">),</span>
+        <span class="n">V</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">hopla_iterative_kwargs</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">],</span>
+        <span class="n">hopla_cpus</span><span class="o">=</span><span class="n">njobs</span><span class="p">,</span>
+        <span class="n">hopla_logfile</span><span class="o">=</span><span class="n">logfile</span><span class="p">,</span>
+        <span class="n">hopla_python_cmd</span><span class="o">=</span><span class="n">python_cmd</span><span class="p">,</span>
+        <span class="n">hopla_use_subprocess</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">hopla_verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">exitcodes</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The registration failed, check the log &quot;</span>
+                         <span class="s2">&quot;&#39;{0}&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span>
+
+    <span class="c1"># Start timeserie concatenation</span>
+    <span class="n">timeserie</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">affine</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">outdirs</span><span class="p">:</span>
+        <span class="n">sid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">_im</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span>  <span class="s2">&quot;ants_2WarpToTemplate_{0}.nii.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sid</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">affine</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">affine</span> <span class="o">=</span> <span class="n">_im</span><span class="o">.</span><span class="n">affine</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Affine matrices must be the same: {0} - &quot;</span>
+                             <span class="s2">&quot;{1}.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">_im</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">timeserie</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">registered_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">timeserie</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">_im</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">registered_array</span><span class="p">,</span> <span class="n">affine</span><span class="p">)</span>
+    <span class="n">resfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;ants_WarpToTemplate.nii.gz&quot;</span><span class="p">)</span>
+    <span class="n">nibabel</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">_im</span><span class="p">,</span> <span class="n">resfile</span><span class="p">)</span>
+
+    <span class="c1"># Clean temporary files if requested</span>
+    <span class="k">if</span> <span class="n">clean_tmp</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resfile</span></div>
+
+
+<div class="viewcode-block" id="jip_align"><a class="viewcode-back" href="../../../generated/pypreclin.preproc.register.html#pypreclin.preproc.register.jip_align">[docs]</a><span class="k">def</span> <span class="nf">jip_align</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">jipdir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+              <span class="n">auto</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">non_linear</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fslconfig</span><span class="o">=</span><span class="n">DEFAULT_FSL_PATH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Register a source image to a taget image using the &#39;jip_align&#39;</span>
+<span class="sd">    command.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source_file: str (mandatory)</span>
+<span class="sd">        the source Nifti image.</span>
+<span class="sd">    target_file: str (mandatory)</span>
+<span class="sd">        the target Nifti masked image.</span>
+<span class="sd">    outdir: str (mandatory)</span>
+<span class="sd">        the destination folder.</span>
+<span class="sd">    jipdir: str (mandatory)</span>
+<span class="sd">        the jip binary path.</span>
+<span class="sd">    prefix: str (optional, default &#39;w&#39;)</span>
+<span class="sd">        prefix the generated file with this character.</span>
+<span class="sd">    auto: bool (optional, default False)</span>
+<span class="sd">        if set control the JIP window with the script.</span>
+<span class="sd">    non_linear: bool (optional, default False)</span>
+<span class="sd">        in the automatic mode, decide or not to compute the non-linear</span>
+<span class="sd">        deformation field.</span>
+<span class="sd">    fslconfig: str (optional)</span>
+<span class="sd">        the FSL .sh configuration file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    register_file: str</span>
+<span class="sd">        the registered image.</span>
+<span class="sd">    register_mask_file: str</span>
+<span class="sd">        the registered and masked image.</span>
+<span class="sd">    native_masked_file: str</span>
+<span class="sd">        the masked image in the native space.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check input image orientation: must be the same</span>
+    <span class="n">same_orient</span><span class="p">,</span> <span class="n">orients</span> <span class="o">=</span> <span class="n">check_orientation</span><span class="p">([</span><span class="n">source_file</span><span class="p">,</span> <span class="n">target_file</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">same_orient</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Source file &#39;{0}&#39; ({2}) and taget file &#39;{1}&#39; ({3}) must have &quot;</span>
+            <span class="s2">&quot;the same orientation for JIP to work properly.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">source_file</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">orients</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">orients</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># Try to init the affine deformation</span>
+    <span class="c1"># ToDo: find a way to init the JIP deformation</span>
+    <span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="n">nb_cpus</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+        <span class="n">init_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;init_affine.mat&quot;</span><span class="p">)</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="n">AffineInitializer</span><span class="p">()</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">fixed_image</span> <span class="o">=</span> <span class="n">target_file</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">moving_image</span> <span class="o">=</span> <span class="n">source_file</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">=</span> <span class="n">nb_cpus</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">out_file</span> <span class="o">=</span> <span class="n">init_file</span>
+        <span class="n">init</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="n">init_source_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;init_source.nii.gz&quot;</span><span class="p">)</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="n">ApplyTransforms</span><span class="p">()</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">input_image</span> <span class="o">=</span> <span class="n">source_file</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">reference_image</span> <span class="o">=</span> <span class="n">target_file</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">output_image</span> <span class="o">=</span> <span class="n">init_source_file</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">init_file</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">interpolation</span> <span class="o">=</span> <span class="s2">&quot;BSpline&quot;</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">=</span> <span class="n">nb_cpus</span>
+        <span class="n">at</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="c1"># From https://github.com/ANTsX/ANTs/wiki/ITK-affine-transform-conversion</span>
+        <span class="c1"># From https://github.com/netstim/leaddbs/blob/master/helpers/ea_antsmat2mat.m</span>
+        <span class="n">init_mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">init_file</span><span class="p">)</span>
+        <span class="n">afftransform</span> <span class="o">=</span> <span class="n">init_mat</span><span class="p">[</span><span class="s2">&quot;AffineTransform_double_3_3&quot;</span><span class="p">]</span>
+        <span class="n">m_center</span> <span class="o">=</span> <span class="n">init_mat</span><span class="p">[</span><span class="s2">&quot;fixed&quot;</span><span class="p">]</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">afftransform</span><span class="p">[:</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">m_translation</span> <span class="o">=</span> <span class="n">afftransform</span><span class="p">[</span><span class="mi">9</span><span class="p">:]</span>
+        <span class="n">m_offset</span> <span class="o">=</span> <span class="n">m_translation</span> <span class="o">+</span> <span class="n">m_center</span> <span class="o">-</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">m_center</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_offset</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+        <span class="c1">#rotation = swap_affine(axes=&quot;LPS&quot;)</span>
+        <span class="c1">#mat = numpy.dot(rotation, mat)</span>
+        <span class="n">ras_to_lps</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">ras_to_lps</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">ras_to_lps</span><span class="p">[:</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">mat</span> <span class="o">=</span> <span class="n">mat</span> <span class="o">*</span> <span class="n">ras_to_lps</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+        <span class="n">trans</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">shear</span> <span class="o">=</span> <span class="n">decompose44</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+        <span class="n">euler</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mat2euler</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="s1">&#39;sxyz&#39;</span><span class="p">))</span> <span class="o">*</span> <span class="mf">180.</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">euler</span><span class="p">,</span> <span class="n">zoom</span><span class="p">,</span> <span class="n">shear</span><span class="p">)</span>
+        <span class="n">align_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;align.com&quot;</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">nibabel</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">orig</span> <span class="o">-</span> <span class="n">trans</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">align_file</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">of</span><span class="p">:</span>
+            <span class="n">of</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;set registration-translations {0} </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">shift</span><span class="p">])))</span>
+
+    <span class="c1"># Change current working directory</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+
+    <span class="c1"># Only support uncompressed Nifti</span>
+    <span class="n">source_file</span> <span class="o">=</span> <span class="n">ungzip_file</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">)</span>
+    <span class="n">target_file</span> <span class="o">=</span> <span class="n">ungzip_file</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">)</span>
+
+    <span class="c1"># Create jip environment</span>
+    <span class="n">jip_envriron</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+    <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;JIP_HOME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">jipdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;PATH&quot;</span> <span class="ow">in</span> <span class="n">jip_envriron</span><span class="p">:</span>
+        <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">jipdir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jipdir</span>
+
+    <span class="c1"># Copy source file</span>
+    <span class="n">align_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;align.com&quot;</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;align&quot;</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="s2">&quot;-t&quot;</span><span class="p">,</span> <span class="n">target_file</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">auto</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">non_linear</span><span class="p">:</span>
+            <span class="n">auto_cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;-L&quot;</span><span class="p">,</span> <span class="s2">&quot;111111111111&quot;</span><span class="p">,</span> <span class="s2">&quot;-W&quot;</span><span class="p">,</span> <span class="s2">&quot;111&quot;</span><span class="p">,</span> <span class="s2">&quot;-a&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">auto_cmd</span> <span class="o">=</span> <span class="n">cmd</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;-L&quot;</span><span class="p">,</span> <span class="s2">&quot;111111000000&quot;</span><span class="p">,</span> <span class="s2">&quot;-W&quot;</span><span class="p">,</span> <span class="s2">&quot;000&quot;</span><span class="p">,</span> <span class="s2">&quot;-A&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">align_file</span><span class="p">):</span>
+            <span class="n">auto_cmd</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;-I&quot;</span><span class="p">]</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">auto_cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">jip_envriron</span><span class="p">)</span>  
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">jip_envriron</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">align_file</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;No &#39;align.com&#39; file in &#39;{0}&#39; folder. JIP has probably failed: &quot;</span>
+            <span class="s2">&quot;&#39;{1}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="p">)))</span>
+
+    <span class="c1"># Get the apply nonlinear deformation jip batches</span>
+    <span class="n">aplly_nonlin_batch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">preproc</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_nonlin.com&quot;</span><span class="p">)</span>
+    <span class="n">aplly_inv_nonlin_batch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">preproc</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_inv_nonlin.com&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Resample the source image</span>
+    <span class="n">register_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outdir</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source_file</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jip&quot;</span><span class="p">,</span> <span class="n">aplly_nonlin_batch</span><span class="p">,</span> <span class="n">source_file</span><span class="p">,</span> <span class="n">register_file</span><span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">jip_envriron</span><span class="p">)</span>
+
+    <span class="c1"># Apply mask</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">register_file</span> <span class="o">+</span> <span class="s2">&quot;.gz&quot;</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">register_file</span> <span class="o">+</span> <span class="s2">&quot;.gz&quot;</span><span class="p">)</span>
+    <span class="n">register_mask_fileroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">register_mask_file</span> <span class="o">=</span> <span class="n">apply_mask</span><span class="p">(</span>
+        <span class="n">input_file</span><span class="o">=</span><span class="n">register_file</span><span class="p">,</span>
+        <span class="n">output_fileroot</span><span class="o">=</span><span class="n">register_mask_fileroot</span><span class="p">,</span>
+        <span class="n">mask_file</span><span class="o">=</span><span class="n">target_file</span><span class="p">,</span>
+        <span class="n">fslconfig</span><span class="o">=</span><span class="n">fslconfig</span><span class="p">)</span>
+
+    <span class="c1"># Send back masked image to original space</span>
+    <span class="n">register_mask_file</span> <span class="o">=</span> <span class="n">ungzip_file</span><span class="p">(</span><span class="n">register_mask_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                     <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">)</span>
+    <span class="n">native_masked_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">outdir</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span> <span class="o">+</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">register_mask_file</span><span class="p">))</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jip&quot;</span><span class="p">,</span> <span class="n">aplly_inv_nonlin_batch</span><span class="p">,</span> <span class="n">register_mask_file</span><span class="p">,</span>
+           <span class="n">native_masked_file</span><span class="p">]</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">jip_envriron</span><span class="p">)</span>              
+
+    <span class="c1"># Restore current working directory and gzip output</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+    <span class="n">register_file</span> <span class="o">=</span> <span class="n">gzip_file</span><span class="p">(</span>
+        <span class="n">register_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span>
+        <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">register_mask_file</span> <span class="o">=</span> <span class="n">gzip_file</span><span class="p">(</span>
+        <span class="n">register_mask_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span>
+        <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">native_masked_file</span> <span class="o">=</span> <span class="n">gzip_file</span><span class="p">(</span>
+        <span class="n">native_masked_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span>
+        <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">register_file</span><span class="p">,</span> <span class="n">register_mask_file</span><span class="p">,</span> <span class="n">native_masked_file</span><span class="p">,</span> <span class="n">align_file</span></div>
+
+
+<div class="viewcode-block" id="apply_jip_align"><a class="viewcode-back" href="../../../generated/pypreclin.preproc.register.html#pypreclin.preproc.register.apply_jip_align">[docs]</a><span class="k">def</span> <span class="nf">apply_jip_align</span><span class="p">(</span><span class="n">apply_to_files</span><span class="p">,</span> <span class="n">align_with</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">jipdir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+                    <span class="n">apply_inv</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Apply a jip deformation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    apply_to_files: list of str (mandatory)</span>
+<span class="sd">        a list of image path to apply the computed deformation.</span>
+<span class="sd">    align_with: str ot list of str (mandatory)</span>
+<span class="sd">        the alignement file containind the deformation parameters. Expect</span>
+<span class="sd">        an &#39;align.com&#39; file.</span>
+<span class="sd">    outdir: str (mandatory)</span>
+<span class="sd">        the destination folder.</span>
+<span class="sd">    jipdir: str (mandatory)</span>
+<span class="sd">        the jip binary path.</span>
+<span class="sd">    prefix: str (optional, default &#39;w&#39;)</span>
+<span class="sd">        prefix the generated file with this character.</span>
+<span class="sd">    apply_inv: bool (optional, default False)</span>
+<span class="sd">        if set apply the inverse deformation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    deformed_files: list of str</span>
+<span class="sd">        the deformed input files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check input parameters</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">align_with</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">align_with</span> <span class="o">=</span> <span class="p">[</span><span class="n">align_with</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apply_to_files</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;apply_to_files&#39; function parameter must &quot;</span>
+                         <span class="s2">&quot;contains a list of files.&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">apply_to_files</span> <span class="o">+</span> <span class="n">align_with</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;{0}&#39; is not a valid file.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="c1"># Get the apply nonlinear deformation jip batches</span>
+    <span class="k">if</span> <span class="n">apply_inv</span><span class="p">:</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">preproc</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;apply_inv_nonlin.com&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">preproc</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span> <span class="s2">&quot;resources&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;apply_nonlin.com&quot;</span><span class="p">)</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+    <span class="c1"># Create jip environment</span>
+    <span class="n">jip_envriron</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
+    <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;JIP_HOME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">jipdir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;PATH&quot;</span> <span class="ow">in</span> <span class="n">jip_envriron</span><span class="p">:</span>
+        <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">jipdir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">jip_envriron</span><span class="p">[</span><span class="s2">&quot;PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jipdir</span>
+
+    <span class="c1"># Apply the jip deformation</span>
+    <span class="n">deformed_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">apply_to_files</span><span class="p">:</span>
+        <span class="n">extra_file</span> <span class="o">=</span> <span class="n">ungzip_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">)</span>
+        <span class="n">deformed_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">outdir</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">extra_file</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">align_file</span> <span class="ow">in</span> <span class="n">align_with</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">align_file</span><span class="p">))</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jip&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">extra_file</span><span class="p">,</span> <span class="n">deformed_file</span><span class="p">]</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">jip_envriron</span><span class="p">)</span>
+            <span class="n">extra_file</span> <span class="o">=</span> <span class="n">deformed_file</span>
+        <span class="n">deformed_file</span> <span class="o">=</span> <span class="n">gzip_file</span><span class="p">(</span>
+            <span class="n">deformed_file</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span> <span class="n">remove_original_file</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">deformed_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deformed_file</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">deformed_files</span></div>
+
+
+<div class="viewcode-block" id="check_jip_install"><a class="viewcode-back" href="../../../generated/pypreclin.preproc.register.html#pypreclin.preproc.register.check_jip_install">[docs]</a><span class="k">def</span> <span class="nf">check_jip_install</span><span class="p">(</span><span class="n">jipdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Simple function to test if the JIP software bibaries are present.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    jip_dir: str</span>
+<span class="sd">        the JIP binaries directory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    status: bool</span>
+<span class="sd">        the JIP installation status.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;jip&quot;</span><span class="p">,</span> <span class="s2">&quot;align&quot;</span><span class="p">):</span>
+        <span class="n">binary_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">jipdir</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">binary_path</span><span class="p">):</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="resample_image"><a class="viewcode-back" href="../../../generated/pypreclin.preproc.register.html#pypreclin.preproc.register.resample_image">[docs]</a><span class="k">def</span> <span class="nf">resample_image</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="n">target_file</span><span class="p">,</span> <span class="n">out_file</span><span class="p">,</span>
+                   <span class="n">fslconfig</span><span class="o">=</span><span class="n">DEFAULT_FSL_PATH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Resample a source image to fit witha target image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    source_file: str</span>
+<span class="sd">        the source Nifti image.</span>
+<span class="sd">    target_file: str</span>
+<span class="sd">        the target Nifti image.</span>
+<span class="sd">    out_file: str</span>
+<span class="sd">        the destination file.</span>
+<span class="sd">    fslconfig: str (optional)</span>
+<span class="sd">        the FSL .sh configuration file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flirt</span><span class="p">(</span>
+        <span class="n">in_file</span><span class="o">=</span><span class="n">source_file</span><span class="p">,</span>
+        <span class="n">ref_file</span><span class="o">=</span><span class="n">target_file</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">&quot;corratio&quot;</span><span class="p">,</span>
+        <span class="n">applyxfm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out_file</span><span class="p">,</span>
+        <span class="n">interp</span><span class="o">=</span><span class="s2">&quot;nearestneighbour&quot;</span><span class="p">,</span>
+        <span class="n">shfile</span><span class="o">=</span><span class="n">fslconfig</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out_file</span></div>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+
+    <div class="clearer">
+    </div>
+  </div>
+  
+</div>
+
+<div class="footer">
+    &copy; 2019, 
+Antoine Grigis &lt;antoine.grigis@cea.fr&gt;
+Jordy Tasserie &lt;jordy.tasserie@cea.fr&gt;
+Bechir Jarraya &lt;bechir.jarraya@cea.fr&gt;
+ &lt;antoine.grigis@cea.fr&gt;.
+</div>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+API documentation of PYPRECLIN
+===============================
+
+This is the classes and functions reference in pypreclin. Please refer to the gallery for further details, as the class and function raw specifications may not be enough to give full guidelines on their uses.
+
+.. rst-class:: documentation-contents
+
+  **Contents**:
+    * `pypreclin <pypreclin.html>`_
+    * `pypreclin.utils <pypreclin.utils.html>`_
+    * `pypreclin.apps <pypreclin.apps.html>`_
+    * `pypreclin.plotting <pypreclin.plotting.html>`_
+    * `pypreclin.workflow <pypreclin.workflow.html>`_
+    * `pypreclin.preproc <pypreclin.preproc.html>`_
+
+.. raw:: html
+
+    <!-- Block section -->
+
+    <div class='container-fluid'>
+
+    <div class='float-left'>
+
+    <div class='row'>
+
+    <div class='col-md-4'>
+    <h3><a href='pypreclin.html'>
+    pypreclin
+    </a></h3>
+    <blockquote>
+        <p>Package to process fMRI datasets.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='pypreclin.utils.html'>
+    pypreclin.utils
+    </a></h3>
+    <blockquote>
+        <p>Utility functions to process preclinical datasets.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='pypreclin.apps.html'>
+    pypreclin.apps
+    </a></h3>
+    <blockquote>
+        <p>Module that provides a graphical application to execute functions.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>    <div class='col-md-4'>
+    <h3><a href='pypreclin.plotting.html'>
+    pypreclin.plotting
+    </a></h3>
+    <blockquote>
+        <p>Utility functions to display results.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='pypreclin.workflow.html'>
+    pypreclin.workflow
+    </a></h3>
+    <blockquote>
+        <p>Module that provides common workflows.</p>    </blockquote>
+    </div>
+    <div class='col-md-4'>
+    <h3><a href='pypreclin.preproc.html'>
+    pypreclin.preproc
+    </a></h3>
+    <blockquote>
+        <p>Preclincial preprocessings.</p>    </blockquote>
+    </div>
+
+    </div>
+    <div class='row'>
+    </div>
+    </div>
+    </div>

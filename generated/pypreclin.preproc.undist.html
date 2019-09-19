@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+  
+    <title>PYPRECLIN &mdash; pypreclin</title>
+  <!-- htmltitle is before nature.css - we use this hack to load bootstrap first -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../_static/css/bootstrap.min.css" media="screen" />
+
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pypreclin" href="../index.html" />
+  
+   
+       <script type="text/javascript" src="../_static/sidebar.js"></script>
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../_static/js/bootstrap.min.js" type="text/javascript"></script>
+
+  <script src="../_static/js/angular.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module("navApp", []);
+    app.controller('navCtrl', ['$scope', '$window', function($scope, $window) {
+      $scope.isActive = function (viewLocation) {
+        var rel = $window.location.pathname.split("/")
+        rel = rel[rel.length - 1]
+        rel = rel.split(".")[0]
+        var active = (viewLocation === rel);
+        return active;};
+    }]);
+  </script>
+
+  </head>
+  <body role="document"><div class="banner">
+  <div class="container-fluid banner-container">
+    <div class="row banner-inner">
+      <div class="col-xs-4">
+        <img alt="Logo" src="../_static/pypreclin.png">
+      </div>
+      <div class="col-xs-8">
+            <p>Python processing for PreClinical data.</p>
+      </div>
+    </div>  
+  </div>
+</div><nav class="navbar navbar-default navbar-static-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+        </a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" ng-controller="navCtrl" ng-app="navApp">
+      <ul class="nav navbar-nav">
+        <li ng-class="{ active: isActive('index') }"><a href="../index.html">Home</a></li>
+        <li ng-class="{ active: isActive('installation') }"><a href="installation.html">Installation</a></li>
+        <li ng-class="{ active: isActive('gallery') }"><a href="../auto_gallery/gallery.html">Gallery</a></li>
+        <li ng-class="{ active: isActive('documentation') }"><a href="documentation.html">API documentation</a></li>
+        <!--<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+	        <li><a href="pypreclin.html">Pypreclin</a></li>
+<li><a href="pypreclin.utils.html">Pypreclin.utils</a></li>
+<li><a href="pypreclin.apps.html">Pypreclin.apps</a></li>
+<li><a href="pypreclin.plotting.html">Pypreclin.plotting</a></li>
+<li><a href="pypreclin.workflow.html">Pypreclin.workflow</a></li>
+<li><a href="pypreclin.preproc.html">Pypreclin.preproc</a></li>
+          </ul>
+        </li>-->
+        <li><a href="http://www.unicog.org/site_2016/">UNICOG</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="content-wrapper">
+    <div class="sphinxsidebar">
+      <div class="sphinxsidebarwrapper">
+
+        <!-- info setup -->
+          <p class="doc-version">
+           This documentation is for pypreclin <strong>version 1.0.0</strong>
+          </p>
+        <p class="citing">
+          If you use the software, please do not hesitate to 
+          <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+          Report a Bug</a>.
+        </p>
+
+      <!-- toc tree -->
+      <ul class="simple">
+</ul>
+
+
+      </div>
+    </div>
+  
+
+  <div class="content">
+      
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="module-pypreclin.preproc.undist"></span><p>B0 inhomogeneties correction.</p>
+<dl class="function">
+<dt id="pypreclin.preproc.undist.fugue">
+<code class="descclassname">pypreclin.preproc.undist.</code><code class="descname">fugue</code><span class="sig-paren">(</span><em>epi_file</em>, <em>phase_file</em>, <em>magnitude_file</em>, <em>delta_te</em>, <em>dwell_time</em>, <em>unwarp_direction</em>, <em>manufacturer</em>, <em>outdir</em>, <em>fsl_sh</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/preproc/undist.html#fugue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.preproc.undist.fugue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unwarping of an EPI image based on fieldmap data using fugue.</p>
+<p>Note: Brain extraction of the EPI image is very important and must be
+tight - that is, it must exclude all non-brain voxels and any voxels with
+only a small partial volume contribution. The reason for this is that
+these areas are normally very noisy in the phase image. The exclusion
+of brain voxels is actually fine and will have no repercussions, since the
+fieldmap is extrapolated beyond this mask.</p>
+<p>Note: If parallel acceleration is used in the EPI acquisition then the
+<em>effective</em> echo spacing (dwell time) is the actual echo spacing between
+acquired lines in k-space divided by the acceleration factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>epi_file: str</strong></p>
+<blockquote>
+<div><p>the EPI file to unwarp.</p>
+</div></blockquote>
+<p><strong>phase_file: str</strong></p>
+<blockquote>
+<div><p>the phase image in the EPI space.</p>
+</div></blockquote>
+<p><strong>magnitude_file: str</strong></p>
+<blockquote>
+<div><p>the magnitude image in the EPI space.</p>
+</div></blockquote>
+<p><strong>delta_te: float</strong></p>
+<blockquote>
+<div><p>the echo time difference of the fieldmap sequence - find this out form
+the operator (defaults are <em>usually</em> 2.46ms on SIEMENS).</p>
+</div></blockquote>
+<p><strong>dwell_time: float</strong></p>
+<blockquote>
+<div><p>set the EPI dwell time per phase-encode line, same as echo spacing (ms).</p>
+</div></blockquote>
+<p><strong>unwarp_direction: str</strong></p>
+<blockquote>
+<div><p>specifies direction of warping: (&#8216;x&#8217; or &#8216;y&#8217; or &#8216;z&#8217; or &#8216;x-&#8216; or &#8216;y-&#8216;
+or &#8216;z-&#8216;)</p>
+</div></blockquote>
+<p><strong>manufacturer: str</strong></p>
+<blockquote>
+<div><p>must be SIEMENS.</p>
+</div></blockquote>
+<p><strong>outdir: str</strong></p>
+<blockquote>
+<div><p>directory for outputs.</p>
+</div></blockquote>
+<p><strong>fsl_sh: str</strong></p>
+<blockquote>
+<div><p>path to fsl setup sh file.</p>
+</div></blockquote>
+<p><strong>verbose: int, default 0</strong></p>
+<blockquote>
+<div><p>control the verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">magnitude_brain_mask_file: str</p>
+<blockquote>
+<div><p>the brain mask.</p>
+</div></blockquote>
+<p>vsm_file: str</p>
+<blockquote>
+<div><p>voxel shift map file.</p>
+</div></blockquote>
+<p>unwarped_epi_file: str</p>
+<blockquote class="last">
+<div><p>unwarped EPI file.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.preproc.undist.mc_undist">
+<code class="descclassname">pypreclin.preproc.undist.</code><code class="descname">mc_undist</code><span class="sig-paren">(</span><em>funcfile</em>, <em>outdir</em>, <em>spmpath</em>, <em>fslpath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/preproc/undist.html#mc_undist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.preproc.undist.mc_undist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Slice by slice motion correction: deprecated</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypreclin.preproc.undist.topup">
+<code class="descclassname">pypreclin.preproc.undist.</code><code class="descname">topup</code><span class="sig-paren">(</span><em>blip_up_file</em>, <em>blip_down_file</em>, <em>blip_up_phase_enc_dir</em>, <em>blip_down_phase_enc_dir</em>, <em>outdir</em>, <em>fsl_sh</em>, <em>apply_to=None</em>, <em>unwarp_direction=None</em>, <em>dwell_time=None</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pypreclin/preproc/undist.html#topup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypreclin.preproc.undist.topup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bias field correction using topup.</p>
+<p>Note: we do not set the total readout times for both acquisitons, and we
+expect that the readout time is identical for all acquisitions. This 
+parameter simply serves to ensure that the estimated field is correctly
+scaled in Hz, but it doesn&#8217;t affect the result in terms of undistorted
+images. We set it to 1, meaning that the field will be scaled as &#8216;voxels 
+displacement&#8217; instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>blip_up_file:  str</strong></p>
+<blockquote>
+<div><p>path to EPI file acquired in opposite phase enc. directions: blip up.</p>
+</div></blockquote>
+<p><strong>blip_down_file:  str</strong></p>
+<blockquote>
+<div><p>path to EPI file acquired in opposite phase enc. directions: blip down.</p>
+</div></blockquote>
+<p><strong>blip_up_phase_enc_dir: str</strong></p>
+<blockquote>
+<div><p>the phase enc. direction for the blip up.</p>
+</div></blockquote>
+<p><strong>blip_down_phase_enc_dir: str</strong></p>
+<blockquote>
+<div><p>the phase enc. direction for the blip down.</p>
+</div></blockquote>
+<p><strong>phase_enc_dirs: list of str</strong></p>
+<blockquote>
+<div><p>the phase enc. directions.</p>
+</div></blockquote>
+<p><strong>outdir: str</strong></p>
+<blockquote>
+<div><p>directory for outputs.</p>
+</div></blockquote>
+<p><strong>fsl_sh: str</strong></p>
+<blockquote>
+<div><p>path to fsl setup sh file.</p>
+</div></blockquote>
+<p><strong>apply_to: str, default None</strong></p>
+<blockquote>
+<div><p>apply the topup correction to the EPI volume.</p>
+</div></blockquote>
+<p><strong>unwarp_direction: str, default None</strong></p>
+<blockquote>
+<div><p>apply topup correction in this direction.</p>
+</div></blockquote>
+<p><strong>dwell_time: float, default None</strong></p>
+<blockquote>
+<div><p>set the EPI dwell time per phase-encode line, same as echo spacing (ms).</p>
+</div></blockquote>
+<p><strong>verbose: int, default 0</strong></p>
+<blockquote>
+<div><p>control the verbosity level.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">fieldmap_hz_file: str</p>
+<blockquote>
+<div><p>the fieldmap in Hz</p>
+</div></blockquote>
+<p>unwarped_epi_file: str</p>
+<blockquote class="last">
+<div><p>unwarped EPI file.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+
+
+          </div>
+        </div>
+      </div>
+
+    <div class="clearer">
+    </div>
+  </div>
+  
+</div>
+
+<div class="footer">
+    &copy; 2019, 
+Antoine Grigis &lt;antoine.grigis@cea.fr&gt;
+Jordy Tasserie &lt;jordy.tasserie@cea.fr&gt;
+Bechir Jarraya &lt;bechir.jarraya@cea.fr&gt;
+ &lt;antoine.grigis@cea.fr&gt;.
+</div>
+  </body>
+</html>
