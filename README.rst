@@ -1,14 +1,14 @@
-|Python27|_
+|Python35|_
 
-.. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
-.. _Python27: https://badge.fury.io/py/python-pySAP
+.. |Python35| image:: https://img.shields.io/badge/python-3.5-blue.svg
+.. _Python35: https://badge.fury.io/py/pypreclin
 
 
 
 Description
 ===========
 
-pyPreClin is a Python project that provides a collection of python scripts for
+pypreclin is a Python project that provides a collection of Python scripts for
 preprocessing MRI preclinical datasets.
 This work is made available by a community of people, amoung which the
 CEA Neurospin UNATI and CEA NeuroSpin UNICOG laboratories, in particular A. Grigis,
@@ -17,8 +17,8 @@ J. Tasserie, and B. Jarraya.
 Important links
 ===============
 
-- Official source code repo: xxx
-- HTML documentation (last stable release): xxx
+- Official source code repo: https://github.com/neurospin/pypreclin
+- HTML documentation (last stable release): http://neurospin.github.io/pypreclin
 
 Dependencies
 ============
@@ -26,13 +26,17 @@ Dependencies
 The required Python dependencies to use the software are:
 
 * numpy
+* scipy
 * hopla
-* bredala
 * pyconnectome
 * pyconnectomist
 * nipype
 * matplotlib
-* pypreprocess
+* nibabel
+* joblib
+* transforms3d
+* filelock
+* python-pypipe (optional)
 
 This package requires also other softwares:
 
@@ -45,17 +49,17 @@ Install
 =======
 
 Make sure you have installed all the dependencies listed above properly.
-Further instructions are available at xxx
+Further instructions are available at http://neurospin.github.io/pypreclin/generated/installation.html
 
 Using Singularity
 =================
 
-Singularity (https://singularity.lbl.gov/) is a convenient to deploy complete
-pyPreClin installations (including all dependencies). Once deployed, it is an
+Singularity (https://singularity.lbl.gov/) is convenient to deploy complete
+pypreclin installations (including all dependencies). Once deployed, it is an
 isolated environment with separate filesystem and namespaces for processes,
-etc. Please refer to the Singularity documentation at for more details.
+etc. Please refer to the Singularity documentation for more details.
 
-We provide a Singularity image with pyPreClin, which can be found at xxx.
+We provide a Singularity image with pypreclin, which can be found at http://biodev.cea.fr/pypreclin/pypreclin-ubuntu.simg.
 
 To use it install first Singularity. On Debian/Ubuntu the package is called
 singularity-container. You can check that Singularity is installed by

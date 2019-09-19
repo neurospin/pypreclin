@@ -1,0 +1,185 @@
+#! /usr/bin/env python3
+##########################################################################
+# NSAp - Copyright (C) CEA, 2013 - 2019
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
+# System import
+from __future__ import print_function
+import os
+import sys
+import json
+import argparse
+import textwrap
+from pprint import pprint
+from datetime import datetime
+from argparse import RawTextHelpFormatter
+
+# Module import
+import pypreclin
+from pypreclin import DEFAULT_FSL_PATH
+from pypreclin import __version__ as version
+from pypreclin.workflow.preproc_fmri import preproc_multi
+
+# Third party import
+from pyconnectome.wrapper import FSLWrapper
+from pyconnectome import __version__ as pyconnectome_version
+
+
+# Parameters to keep trace
+__hopla__ = ["runtime", "inputs", "outputs"]
+
+
+"""
+python3 $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_multi_fmri \
+    -b /neurospin/lbi/monkeyfmri/PRIME_DE_database/ecnu_kwok/site-ecnu_kwok \
+    -t /neurospin/lbi/monkeyfmri/images/reference/mni-resampled_1by1by1.nii \
+    -j /home/ag239446/local/jip-Linux-x86_64/bin \
+    -V 1 \
+    -C /etc/fsl/5.0/fsl.sh \
+    -J 4
+"""
+
+
+def is_file(filearg):
+    """ Type for argparse - checks that file exists but does not open.
+    """
+    if not os.path.isfile(filearg):
+        raise argparse.ArgumentError(
+            "The file '{0}' does not exist!".format(filearg))
+    return filearg
+
+
+def is_directory(dirarg):
+    """ Type for argparse - checks that directory exists.
+    """
+    if not os.path.isdir(dirarg):
+        raise argparse.ArgumentError(
+            "The directory '{0}' does not exist!".format(dirarg))
+    return dirarg
+
+
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="pypreclin_preproc_fmri",
+        description=textwrap.dedent(pypreclin.__doc__),
+        formatter_class=RawTextHelpFormatter)
+
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-b", "--bidsdir",
+        required=True,
+        metavar="<bidsdir>",
+        help="the BIDS organized directory.")
+    required.add_argument(
+        "-t", "--template",
+        type=is_file,
+        required=True,
+        metavar="<path template>",
+        help="the path to the template image in RAS space.")
+    required.add_argument(
+        "-j", "--jipdir",
+        type=is_directory,
+        required=True,
+        metavar="<jip path>",
+        help="the jip software binary path.")
+
+    # Optional arguments
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int,
+        choices=[0, 1, 2],
+        default=0,
+        metavar="<verbose>",
+        help="the verbosity level: 0 silent, >0 verbose.")
+    parser.add_argument(
+        "-R", "--resample",
+        action="store_true",
+        help="if set resample the input template to fit the anatomical image.")
+    parser.add_argument(
+        "-NA", "--anatorient",
+        metavar="<anatorientation>",
+        default="RAS",
+        help="the input anatomical image orientation.")
+    parser.add_argument(
+        "-NF", "--funcorient",
+        metavar="<funcorientation>",
+        default="RAS",
+        help="the input functional image orientation.")
+    parser.add_argument(
+        "-C", "--fslconfig",
+        type=is_file,
+        metavar="<fsl config>",
+        help="the FSL configuration script.")
+    parser.add_argument(
+        "-J", "--njobs",
+        type=int,
+        default=1,
+        help="the number of jobs running in parallel.")
+    parser.add_argument(
+        "-A", "--auto",
+        action="store_true",
+        help="control the JIP window with the script.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    if kwargs["fslconfig"] is None:
+        kwargs["fslconfig"] = DEFAULT_FSL_PATH
+    verbose = kwargs.pop("verbose")
+
+    return kwargs, verbose
+
+
+"""
+Parse the command line.
+"""
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "tool": "pypreclin_preproc_fmri",
+    "tool_version": version,
+    "timestamp": datetime.now().isoformat(),
+    "fsl_version": FSLWrapper([], shfile=inputs["fslconfig"]).version,
+}
+if verbose > 0:   
+    print("[info] Starting fMRI parallel preprocessing...")
+    pprint("-" * 50)
+    print("[info] Runtime:")
+    pprint(runtime)
+    print("[info] Inputs:")
+    pprint(inputs)
+    print("-" * 50)
+
+
+"""
+Execute the workflow
+"""
+outputs = preproc_multi(verbose=verbose, **inputs)
+
+
+"""
+Update the outputs and save them and the inputs in a 'logs' directory.
+"""
+logdir = os.path.join(inputs["bidsdir"], "derivatives", "logs")
+tic = datetime.now()
+date = "{0}-{1}-{2}".format(tic.year, tic.month, tic.day)
+if not os.path.isdir(logdir):
+    os.mkdir(logdir)
+for name, final_struct in [("inputs", inputs), ("outputs", outputs),
+                           ("runtime", runtime)]:
+    log_file = os.path.join(logdir, "{0}_{1}.json".format(name, date))
+    with open(log_file, "wt") as open_file:
+        json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
+                  indent=4)
+if verbose > 1:
+    print("[final]")
+    pprint(outputs)
+

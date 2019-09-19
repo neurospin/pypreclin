@@ -1,6 +1,6 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 ##########################################################################
-# NSAp - Copyright (C) CEA, 2013 - 2018
+# NSAp - Copyright (C) CEA, 2013 - 2019
 # Distributed under the terms of the CeCILL-B license, as published by
 # the CEA-CNRS-INRIA. Refer to the LICENSE file or to
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
@@ -12,141 +12,30 @@ from __future__ import print_function
 import os
 import sys
 import json
-import glob
-import shutil
-from pprint import pprint
-import textwrap
-from datetime import datetime
 import argparse
+import textwrap
+from pprint import pprint
+from datetime import datetime
 from argparse import RawTextHelpFormatter
-
-# Bredala import
-try:
-    import bredala
-    bredala.USE_PROFILER = False
-    bredala.register(
-        "pypreclin.utils.reorient",
-        names=["reorient_image", "check_orientation"])
-    bredala.register(
-        "pypreclin.preproc.register",
-        names=["jip_align", "apply_jip_align", "timeserie_to_reference"])
-    bredala.register(
-        "pypreclin.preproc.undist",
-        names=["mc_undist"])
-    bredala.register(
-        "pypreprocess.reporting.check_preprocessing",
-        names=["plot_registration", "plot_segmentation",
-               "plot_spm_motion_parameters"])
-    bredala.register(
-        "pypreprocess.time_diff",
-        names=["plot_tsdiffs", "multi_session_time_slice_diffs"])
-    bredala.register(
-        "pyconnectome.utils.segtools",
-        names=["fast", "bet2"])
-    bredala.register(
-        "pyconnectome.utils.filetools",
-        names=["fslreorient2std", "apply_mask"])
-    bredala.register(
-        "pyconnectome.utils.regtools",
-        names=["mcflirt", "flirt"])
-    bredala.register(
-        "pyconnectomist.utils.pdftools",
-        names=["generate_pdf"])
-except:
-    pass
 
 # Module import
 import pypreclin
-from pypreclin import __version__ as version
-from pypreclin import DEFAULT_SPM_STANDALONE_PATH
 from pypreclin import DEFAULT_FSL_PATH
-from pypreclin.utils.reorient import reorient_image
-from pypreclin.preproc.register import jip_align
-from pypreclin.preproc.register import apply_jip_align
-from pypreclin.preproc.register import timeserie_to_reference
-from pypreclin.preproc.undist import mc_undist
-
-# PyPreProcess import
-from pypreprocess import __version__ as pypreprocess_version
-from pypreprocess.reporting.check_preprocessing import plot_registration
-from pypreprocess.reporting.check_preprocessing import plot_segmentation
-from pypreprocess.reporting.check_preprocessing import (
-    plot_spm_motion_parameters)
-from pypreprocess.time_diff import plot_tsdiffs
-from pypreprocess.time_diff import multi_session_time_slice_diffs
-
-# PyConnectome import
-from pyconnectome import __version__ as pyconnectome_version
-from pyconnectome.wrapper import FSLWrapper
-from pyconnectome.utils.filetools import fslreorient2std
-from pyconnectome.utils.filetools import apply_mask
-from pyconnectome.utils.segtools import fast
-from pyconnectome.utils.segtools import bet2
-from pyconnectome.utils.regtools import mcflirt
-from pyconnectome.utils.regtools import flirt
-
-# PyConnectomist import
-from pyconnectomist import __version__ as pyconnectomist_version
-from pyconnectomist.utils.pdftools import generate_pdf
+from pypreclin import __version__ as version
+from pypreclin.workflow.preproc_fmri import preproc
 
 # Third party import
-import nibabel
-import pylab as plt
-from nipype.interfaces import fsl
+from pyconnectome.wrapper import FSLWrapper
+from pyconnectome import __version__ as pyconnectome_version
+from pyconnectomist import __version__ as pyconnectomist_version
+
 
 # Parameters to keep trace
-__hopla__ = ["tool", "version", "runtime", "inputs", "outputs"]
+__hopla__ = ["runtime", "inputs", "outputs"]
 
 
-# Global parameters
-STEPS = {
-    "slice_timing": "1-SliceTiming",
-    "warp": "2-B0Inhomogeneities",
-    "reorient": "3-Reorient",
-    "undist": "X-Undist",
-    "realign": "4-Realign",
-    "normalization": "5-Normalization",
-    "inhomogeneities": "6-Inhomogeneities",
-    "coregistration": "7-Coregistration",
-    "wrap": "8-Wrap",
-    "smooth": "9-Smooth",
-    "snaps": "10-Snaps",
-    "report": "11-Report"
-}
-
-
-# Script documentation
-DOC = """
-fMRI preprocessings
-~~~~~~~~~~~~~~~~~~~
-
-Preprocessed a fMRI dataset.
-
-Steps
------
-
-1- Slice Timing correction (with cache).
-2- B0 inhomogeneties correction (optional, with cache)
-3- Reorient images not in RAS coordinate system and reorient images to match
-   the orientation of the standard MNI152 template (with cache).
-4- Undist with UKL codes (optional, deprecated).
-5- Realign: motion correction - adjust for movement between slices (with
-   cache).
-6- Normalization: warp images to fit to a standard template brain (with cache).
-7- Tissues segmentation and spatial intensity variations correction (with
-   cache).
-8- Coregistration: overlay structural and functional images - link
-   functional scans to anatomical scan (with cache).
-9- Wrap functional: resample the functional serie and mask the registered
-   serie (with cache).
-10- Smooth the functional time serie (with cache).
-11- SNAPs: compute some snaps assessing the different processing steps (with
-    cache).
-12- Reporting: generate a QC reporting (with cache).
-
-Commands
---------
-
+# Script command lines examples
+"""
 python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -v 2 \
     -o /volatile/nsap/monkey/processed \
@@ -174,20 +63,21 @@ python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
     -t /volatile/nsap/monkey/reference/mni-resampled_1by1by1.nii \
     -na RIA \
     -nf RIA \
-    -j /home/ag239446/local/jip-Linux-x86_64
+    -j /home/ag239446/local/jip-Linux-x86_64/bin
 
 
 python $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_preproc_fmri \
-    -v 2 \
     -o /volatile/nsap/monkey/processed \
     -s yoshi \
     -f /volatile/nsap/monkey/yoshi/epi_decimated.nii.gz \
     -a /volatile/nsap/monkey/yoshi/t1.nii \
     -r 1.25 \
     -t /volatile/nsap/monkey/reference/mni-resampled_1by1by1.nii \
-    -na RIA \
-    -nf RIA \
-    -j /home/ag239446/local/jip-Linux-x86_64
+    -j /home/ag239446/local/jip-Linux-x86_64/bin \
+    -C /etc/fsl/5.0/fsl.sh \
+    -NA RIA \
+    -NF RIA \
+    -V 2
 """
 
 
@@ -219,747 +109,257 @@ class Range(object):
         return "{0}-{1}".format(self.start, self.end)
 
 
-parser = argparse.ArgumentParser(
-    prog="pypreclin_preproc_fmri",
-    description=textwrap.dedent(DOC),
-    formatter_class=RawTextHelpFormatter)
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="pypreclin_preproc_fmri",
+        description=textwrap.dedent(pypreclin.__doc__),
+        formatter_class=RawTextHelpFormatter)
 
-# Required arguments
-required = parser.add_argument_group("required arguments")
-required.add_argument(
-    "-f", "--funcfile",
-    required=True,
-    type=is_file,
-    metavar="<funcfile>",
-    help="path to the fMRI Nifti file.")
-required.add_argument(
-    "-a", "--anatfile",
-    required=True,
-    type=is_file,
-    metavar="<anatfile>",
-    help="path to the anatomical Nifti file.")
-required.add_argument(
-    "-s", "--sid",
-    required=True,
-    metavar="<subject id>",
-    help="the subject identifier.")
-required.add_argument(
-    "-o", "--outdir",
-    required=True,
-    metavar="<outdir>",
-    help=("the detination folder where the data will be generated."))
-required.add_argument(
-    "-r", "--repetitiontime",
-    type=float,
-    required=True,
-    metavar="<repetition time>",
-    help="the repetition time.")
-required.add_argument(
-    "-t", "--template",
-    type=is_file,
-    required=True,
-    metavar="<path template>",
-    help="the path to the template image.")
-required.add_argument(
-    "-j", "--jipdir",
-    type=is_directory,
-    required=True,
-    metavar="<jip path>",
-    help="the jip binary path.")
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-f", "--funcfile",
+        required=True,
+        type=is_file,
+        metavar="<funcfile>",
+        help="path to the fMRI NIFTI file.")
+    required.add_argument(
+        "-a", "--anatfile",
+        required=True,
+        type=is_file,
+        metavar="<anatfile>",
+        help="path to the anatomical NIFTI file.")
+    required.add_argument(
+        "-s", "--sid",
+        required=True,
+        metavar="<subject id>",
+        help="the subject identifier.")
+    required.add_argument(
+        "-o", "--outdir",
+        required=True,
+        metavar="<outdir>",
+        help="the destination folder where the data will be generated.")
+    required.add_argument(
+        "-r", "--repetitiontime",
+        type=float,
+        required=True,
+        metavar="<repetition time>",
+        help="the repetition time.")
+    required.add_argument(
+        "-t", "--template",
+        type=is_file,
+        required=True,
+        metavar="<path template>",
+        help="the path to the template image in RAS space.")
+    required.add_argument(
+        "-j", "--jipdir",
+        type=is_directory,
+        required=True,
+        metavar="<jip path>",
+        help="the jip software binary path.")
 
-# Optional arguments
-parser.add_argument(
-    "-v", "--verbose",
-    type=int,
-    choices=[0, 1, 2],
-    default=0,
-    metavar="<verbose>",
-    help="the verbosity level: 0 silent, >0 verbose.")
-parser.add_argument(
-    "-e", "--erase",
-    action="store_true",
-    help="if set, clean the subject destination folder.")
-parser.add_argument(
-    "-d", "--realign-dof",
-    type=int, default=6, metavar="<dof>",
-    help="the DOF used during the volumes relagnment level.")
-parser.add_argument(
-    "-z", "--realign-to-vol",
-    action="store_true",
-    help="register timeseries to first or mean volume during realignment.")
-parser.add_argument(
-    "-w", "--warp",
-    action="store_true",
-    help="if set, use a non linear registration to remove B0 first and second "
-         "orders approximation inhomogeneities artifacts.")
-parser.add_argument(
-    "-wn", "--warp-njobs",
-    type=int, default=1,
-    help="the number of jobs running in parallel during the the B0 "
-         "inhomogeneities correction.")
-parser.add_argument(
-    "-wi", "--warp-index",
-    type=int,
-    help="if the '-w' option is set, use this parameter to "
-         "specify the reference volume index in the timeserie.")
-parser.add_argument(
-    "-wr", "--warp-restrict",
-    type=int, nargs=3,
-    default=(1, 1, 1),
-    help="restrict the deformation in the given axis.")
-parser.add_argument(
-    "-wf", "--warp-file",
-    help="if the '-w' option is set, use this parameter to specify the "
-         "reference volume to be used.")
-parser.add_argument(
-    "-u", "--undist",
-    action="store_true",
-    help="if set, use slice by slice undist correction (not recommanded).")
-parser.add_argument(
-    "-na", "--anatorientation",
-    metavar="<anatorientation>",
-    default="RAS",
-    help="the input anatomical image orientation.")
-parser.add_argument(
-    "-nf", "--funcorientation",
-    metavar="<funcorientation>",
-    default="RAS",
-    help="the input functional image orientation.")
-parser.add_argument(
-    "-ta", "--anatbrainthres",
-    type=float,
-    default=0.75,
-    choices=[Range(0.0, 1.0)],
-    metavar="<brain thres>",
-    help=("the threshold used to extract the brain in the anatomical image."))
-parser.add_argument(
-    "-k", "--kernelsize",
-    type=float,
-    default=3.,
-    metavar="<smooth kernel size>",
-    help="the smoothing kernel size in mm.")
-parser.add_argument(
-    "-c", "--fslconfig",
-    type=is_file,
-    metavar="<fsl config>",
-    help="the FSL configuration script.")
-parser.add_argument(
-    "-p", "--spmpath",
-    type=is_directory,
-    metavar="<spm path>",
-    help="the SPM path.")
-parser.add_argument(
-    "-n", "--normalization_trf",
-    type=is_file,
-    metavar="<jip normalization trf>",
-    help="the JIP normalization align.com file.")
-parser.add_argument(
-    "-m", "--coregistration_trf",
-    type=is_file,
-    metavar="<jip coregistration trf>",
-    help="the JIP coregistration align.com file.")
-parser.add_argument(
-    "-r1", "--recon1",
-    action="store_true",
-    help="run processing steps 1-4 only.")
-parser.add_argument(
-    "-r2", "--recon2",
-    action="store_true",
-    help="run processing steps 1-7 only.")
-parser.add_argument(
-    "-A", "--auto",
-    action="store_true",
-    help="if set control the JIP window with the script.")
-args = parser.parse_args()
+    # Optional arguments
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int,
+        choices=[0, 1, 2],
+        default=0,
+        metavar="<verbose>",
+        help="the verbosity level: 0 silent, >0 verbose.")
+    parser.add_argument(
+        "-E", "--erase",
+        action="store_true",
+        help="if set clean the destination folder if it exists.")
+    parser.add_argument(
+        "-R", "--resample",
+        action="store_true",
+        help="if set resample the input template to fit the anatomical image.")
+    parser.add_argument(
+        "-I", "--interleaved",
+        action="store_true",
+        help="use interleaved acquisition.")
+    parser.add_argument(
+        "-O", "--sliceorder",
+        choices=("ascending", "descending"),
+        default="ascending",
+        help="the acquisition slice order.")
+    parser.add_argument(
+        "-D", "--realign-dof",
+        type=int, default=6, metavar="<dof>",
+        help="the DOF used during the volumes realignment level.")
+    parser.add_argument(
+        "-Z", "--realign-to-vol",
+        action="store_true",
+        help="during realignment register timeseries to first or mean volume.")
+    parser.add_argument(
+        "-W", "--warp",
+        action="store_true",
+        help="use a non linear registration to remove B0 first and second "
+             "orders approximation inhomogeneities artifacts.")
+    parser.add_argument(
+        "-WN", "--warp-njobs",
+        type=int,
+        default=1,
+        help="the number of jobs running in parallel during the the B0 "
+             "inhomogeneities correction.")
+    parser.add_argument(
+        "-WI", "--warp-index",
+        type=int,
+        default=8,
+        help="if the '-w' option is set, use this parameter to "
+             "specify the reference volume index in the timeserie.")
+    parser.add_argument(
+        "-WF", "--warp-file",
+        help="if the '-w' option is set, use this parameter to specify the "
+             "reference volume to be used.")
+    parser.add_argument(
+        "-WR", "--warp-restrict",
+        type=int,
+        nargs=3,
+        default=(0, 1, 0),
+        help="restrict the deformation in the given axis.")
+    parser.add_argument(
+        "-WT", "--delta-te",
+        type=float,
+        metavar="<delta TE>",
+        help="the difference in msec between the 2 echoes of the B0 magnitude"
+             "map (usually 2.46ms).")
+    parser.add_argument(
+        "-WD", "--dwell-time",
+        type=float,
+        metavar="<dwell time>",
+        help="The dwell time or effective echo spacing.")
+    parser.add_argument(
+        "-WA", "--manufacturer",
+        type=str,
+        default="SIEMENS",
+        help="Scanner manufacturer (must be SIEMENS).")
+    parser.add_argument(
+        "-WB", "--blip-files",
+        type=is_file,
+        metavar="<path>",
+        nargs=2,
+        help="The 2 EPI data acquired in opposite phase enc. direction.")
+    parser.add_argument(
+        "-WE", "--blip-enc-dirs",
+        metavar="<path>",
+        nargs=2,
+        choices=("i", "i-", "j", "j-"),
+        help="The 2 EPI data enc. directions.")
+    parser.add_argument(
+        "-WU", "--unwarp-direction",
+        metavar="<path>",
+        choices=("i", "i-", "j", "j-"),
+        help="The EPI functional data enc. direction.")
+    parser.add_argument(
+        "-WP", "--phase-file",
+        type=is_file, metavar="<path>",
+        help="Phase difference fieldmap image from a SIEMENS scanner.")
+    parser.add_argument(
+        "-WM", "--magnitude-file",
+        type=is_file, metavar="<path>",
+        help="Two magnitude fieldmap image from a SIEMENS scanner (one for "
+             "each echo time).")
+    parser.add_argument(
+        "-NA", "--anatorient",
+        metavar="<anatorientation>",
+        default="RAS",
+        help="the input anatomical image orientation.")
+    parser.add_argument(
+        "-NF", "--funcorient",
+        metavar="<funcorientation>",
+        default="RAS",
+        help="the input functional image orientation.")
+    parser.add_argument(
+        "-K", "--kernel-size",
+        type=float,
+        default=3.,
+        metavar="<smooth kernel size>",
+        help="the smoothing kernel size in mm.")
+    parser.add_argument(
+        "-C", "--fslconfig",
+        type=is_file,
+        metavar="<fsl config>",
+        help="the FSL configuration script.")
+    parser.add_argument(
+        "-N", "--normalization-trf",
+        type=is_file,
+        metavar="<jip normalization trf>",
+        help="the JIP normalization 'align.com' file.")
+    parser.add_argument(
+        "-M", "--coregistration-trf",
+        type=is_file,
+        metavar="<jip coregistration trf>",
+        help="the JIP coregistration 'align.com' file.")
+    parser.add_argument(
+        "-R1", "--recon1",
+        action="store_true",
+        help="run processing steps 1-4 only.")
+    parser.add_argument(
+        "-R2", "--recon2",
+        action="store_true",
+        help="run processing steps 1-7 only.")
+    parser.add_argument(
+        "-A", "--auto",
+        action="store_true",
+        help="control the JIP window with the script.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    if kwargs["fslconfig"] is None:
+        kwargs["fslconfig"] = DEFAULT_FSL_PATH
+    verbose = kwargs.pop("verbose")
+
+    return kwargs, verbose
 
 
 """
-First check if the subject directory exists on the file system, and
-clean it if requested.
+Parse the command line.
 """
-tool = "pypreclin_preproc_fmri"
-timestamp = datetime.now().isoformat()
-tool_version = version
-fsl_config = args.fslconfig or DEFAULT_FSL_PATH
-jipdir = args.jipdir
-fsl_version = FSLWrapper([], shfile=fsl_config).version
-params = locals()
-runtime = dict([(name, params[name])
-               for name in ("fsl_config", "tool", "tool_version",
-                            "fsl_version", "timestamp", "pyconnectome_version",
-                            "pypreprocess_version", "pyconnectomist_version",
-                            "jipdir")])
-
-if args.verbose > 0:
-    print("[info] Start fMRI preprocessings...")
-    print("-" * 50)
-    print("[info] fMRI dataset: {0}.".format(args.funcfile))
-    print("[info] Anatomical dataset: {0}.".format(args.anatfile))
-    print("[info] Subject: {0}.".format(args.sid))
-    print("[info] Template: {0}.".format(args.template))
-    print("-" * 50)
-outdir = args.outdir
-anatorient = args.anatorientation
-funcorient = args.funcorientation
-sid = args.sid
-anatfile = args.anatfile
-funcfile = args.funcfile
-tr = args.repetitiontime
-spmpath = args.spmpath
-warp = args.warp
-warp_restrict = args.warp_restrict
-warp_index = args.warp_index
-warp_file = args.warp_file
-warp_njobs = args.warp_njobs
-undist = args.undist
-kernel_size = args.kernelsize
-anatbrainthres = args.anatbrainthres
-template = args.template
-subjdir = os.path.join(outdir, sid)
-normalization_trf = args.normalization_trf
-coregistration_trf = args.coregistration_trf
-dof = args.realign_dof
-realign_to_mean = not args.realign_to_vol
-params = locals()
-inputs = dict([(name, params[name])
-               for name in ("outdir", "anatfile", "funcfile", "tr", "sid",
-                            "template", "anatorient", "funcorient", "subjdir",
-                            "anatbrainthres", "undist", "spmpath",
-                            "normalization_trf", "coregistration_trf",
-                            "warp", "warp_index", "warp_njobs", "warp_file",
-                            "dof", "realign_to_mean", "warp_restrict")])
-outputs = None
-if args.verbose > 0:
-    print("[info] Inputs:")
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "tool": "pypreclin_preproc_fmri",
+    "tool_version": version,
+    "timestamp": datetime.now().isoformat(),
+    "fsl_version": FSLWrapper([], shfile=inputs["fslconfig"]).version,
+    "pyconnectomist_version": pyconnectomist_version
+}
+if verbose > 0:   
+    pprint("[info] Starting fMRI preprocessing...")
+    pprint("-" * 50)
+    pprint("[info] Runtime:")
+    pprint(runtime)
+    pprint("[info] Inputs:")
     pprint(inputs)
-if args.erase and os.path.isdir(subjdir):
-    shutil.rmtree(subjdir)
-if not os.path.isdir(subjdir):
-    os.mkdir(subjdir)
+    pprint("-" * 50)
 
 
 """
-Slice timing
+Execute the workflow
 """
-st_dir = os.path.join(subjdir, STEPS["slice_timing"])
-if not os.path.isdir(st_dir):
-    os.mkdir(st_dir)
-    interface = fsl.SliceTimer()
-    returncode = interface.run(
-        in_file=funcfile,
-        interleaved=False,
-        slice_direction=3,
-        time_repetition=tr,
-        index_dir=False,
-        out_file=os.path.join(
-            st_dir, os.path.basename(funcfile).split(".")[0] + ".nii.gz"))
-    st_outputs = returncode.outputs.get()
-    slice_time_corrected_file = st_outputs["slice_time_corrected_file"]
-else:
-    print("Using cached version in '{0}'.".format(st_dir))
-    dir_files = glob.glob(os.path.join(st_dir, "*.nii.gz"))
-    if len(dir_files) != 1:
-        raise ValueError("Unexpected number of files in '{0}'.".format(st_dir))
-    slice_time_corrected_file = dir_files[0]
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Slice time corrected functional: {0}.".format(
-        slice_time_corrected_file))
-    print("-" * 50)
-
-
-"""
-B0 inhomogeneities
-"""
-if warp:
-    warp_dir = os.path.join(subjdir, STEPS["warp"])
-    if not os.path.isdir(warp_dir):
-        os.mkdir(warp_dir)
-        b0_corrected_file = timeserie_to_reference(
-            tfile=slice_time_corrected_file,
-            rindex=warp_index,
-            restrict_deformation=warp_restrict,
-            rfile=warp_file,
-            outdir=warp_dir,
-            njobs=warp_njobs,
-            clean_tmp=True)
-    else:
-        print("Using cached version in '{0}'.".format(warp_dir))
-        dir_files = glob.glob(os.path.join(warp_dir, "*.nii.gz"))
-        if len(dir_files) != 1:
-            raise ValueError(
-                "Unexpected number of files in '{0}'.".format(warp_dir))
-        b0_corrected_file = dir_files[0]
-else:
-    b0_corrected_file = slice_time_corrected_file
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] B0 inhomogeneities corrected functional: {0}.".format(
-        b0_corrected_file))
-    print("-" * 50)
-
-
-"""
-Reorient images not in LAS coordinate system and
-reorient images to match the orientation of the standard MNI152 template.
-"""
-reorient_dir = os.path.join(subjdir, STEPS["reorient"])
-already_processed = True
-if not os.path.isdir(reorient_dir):
-    os.mkdir(reorient_dir)
-    already_processed = False
-reoriented_funcfile = b0_corrected_file
-reoriented_anatfile = anatfile
-if funcorient != "RAS":
-    if not already_processed:
-        reoriented_funcfile = reorient_image(
-            b0_corrected_file,
-            axes=funcorient,
-            prefix="o",
-            output_directory=reorient_dir)
-    else:
-        print("Using cached version in '{0}'.".format(reorient_dir))
-        reoriented_funcfile = os.path.join(
-            reorient_dir, "o" + os.path.basename(b0_corrected_file))
-if anatorient != "RAS":
-    if not already_processed:
-        reoriented_anatfile = reorient_image(
-            anatfile,
-            axes=anatorient,
-            prefix="o",
-            output_directory=reorient_dir)
-    else:
-        print("Using cached version in '{0}'.".format(reorient_dir))
-        reoriented_anatfile = os.path.join(
-            reorient_dir, "o" + os.path.basename(anatfile))
-
-standard_funcfile = os.path.join(
-    reorient_dir, "d" + os.path.basename(reoriented_funcfile).split(".")[0])
-if not already_processed:
-    standard_funcfile = fslreorient2std(
-        reoriented_funcfile,
-        standard_funcfile,
-        fslconfig=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(reorient_dir))
-    standard_funcfile = standard_funcfile + ".nii.gz"
-anat_basename = "d" + os.path.basename(reoriented_anatfile).split(".")[0]
-standard_anatfile = os.path.join(reorient_dir, anat_basename)
-if not already_processed:
-    standard_anatfile = fslreorient2std(
-        reoriented_anatfile,
-        standard_anatfile,
-        fslconfig=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(reorient_dir))
-    standard_anatfile = standard_anatfile + ".nii.gz"
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Reoriented functional: {0}.".format(standard_funcfile))
-    print("[result] Reoriented anatomical: {0}.".format(standard_anatfile))
-    print("-" * 50)
-
-
-"""
-Undist
-"""
-if undist:
-    raise NotImplementedError("This option is deprecated and must not be used.")
-    undist_dir = os.path.join(subjdir, STEPS["undist"])
-    if not os.path.isdir(undist_dir):
-        os.mkdir(undist_dir)
-    undist_funcfile = mc_undist(
-        funcfile=standard_funcfile,
-        outdir=undist_dir,
-        spmpath=spmpath,
-        fslpath=fsl_config)
-else:
-    undist_funcfile = standard_funcfile
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Undist functional: {0}.".format(undist_funcfile))
-    print("-" * 50)
-
-
-"""
-Realign
-"""
-realign_dir = os.path.join(subjdir, STEPS["realign"])
-if not os.path.isdir(realign_dir):
-    os.mkdir(realign_dir)
-    realign_func_rootfile = os.path.join(
-        realign_dir, "r" + os.path.basename(undist_funcfile).split(".")[0])
-    realign_funcfile, realign_func_meanfile, realign_func_parfile = mcflirt(
-        in_file=undist_funcfile,
-        out_fileroot=realign_func_rootfile,
-        cost="normcorr",
-        bins=256,
-        dof=dof,
-        refvol=warp_index,
-        reffile=warp_file,
-        reg_to_mean=realign_to_mean,
-        mats=True,
-        plots=True,
-        verbose=args.verbose,
-        shfile=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(realign_dir))
-    dir_files = glob.glob(os.path.join(realign_dir, "*.nii.gz"))
-    if len(dir_files) != 2:
-        raise ValueError(
-            "Unexpected number of files in '{0}'.".format(realign_dir))
-    realign_funcfile, realign_func_meanfile = (None, None)
-    for path in dir_files:
-        if path.endswith("mean_reg.nii.gz"):
-            realign_func_meanfile = path
-        else:
-            realign_funcfile = path
-    dir_files = glob.glob(os.path.join(realign_dir, "*.par"))
-    if len(dir_files) != 1:
-        raise ValueError(
-            "Unexpected number of files in '{0}'.".format(realign_dir))
-    realign_func_parfile = dir_files[0]     
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Realign functional: {0}.".format(realign_funcfile))
-    print("[result] Realign mean functional: {0}.".format(realign_func_meanfile))
-    print("-" * 50)
-
-# Early stop detected
-if args.recon1:
-    print("[warn] User requested a processing early stop. Remove the 'recon1' "
-          "option to resume.")
-    sys.exit(0)
-
-
-"""
-Normalization.
-"""
-normalization_dir = os.path.join(subjdir, STEPS["normalization"])
-if not os.path.isdir(normalization_dir):
-    os.mkdir(normalization_dir)
-    if normalization_trf is not None:
-        shutil.copy(normalization_trf, normalization_dir)
-    (register_anatfile, register_anat_maskfile,
-     native_anat_maskfile, align_normfile) = jip_align(
-        source_file=standard_anatfile,
-        target_file=template,
-        outdir=normalization_dir,
-        jipdir=jipdir,
-        prefix="w",
-        auto=args.auto,
-        non_linear=True,
-        fslconfig=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(normalization_dir))
-    register_anatfile = glob.glob(
-        os.path.join(normalization_dir, "wdo*.nii.gz"))[0]
-    register_anat_maskfile = glob.glob(
-        os.path.join(normalization_dir, "mwdo*.nii.gz"))[0]
-    native_anat_maskfile = glob.glob(
-        os.path.join(normalization_dir, "nwmwdo*.nii.gz"))[0]
-    align_normfile = os.path.join(normalization_dir, "align.com")
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] T1 in template space: {0}.".format(register_anatfile))
-    print("[result] Masked T1 in template space: {0}.".format(
-        register_anat_maskfile))
-    print("[result] Masked T1 in native space: {0}.".format(
-        native_anat_maskfile))
-    print("[result] Alignement file: {0}.".format(align_normfile))
-    print("-" * 50)
-
-
-"""
-Tissues segmentation and spatial intensity variations correction.
-"""
-inhomogeneities_dir = os.path.join(subjdir, STEPS["inhomogeneities"])
-if not os.path.isdir(inhomogeneities_dir):
-    os.mkdir(inhomogeneities_dir)
-    fast_fileroot = os.path.join(
-        inhomogeneities_dir, "fast_" + os.path.basename(
-            native_anat_maskfile).split(".")[0])
-    tpm, tsm, segmentation_anatfile, bias_anatfile, biascorrected_anatfile = fast(
-        input_file=native_anat_maskfile,
-        out_fileroot=fast_fileroot,
-        klass=3,
-        im_type=1,
-        segments=True,
-        bias_field=True,
-        bias_corrected_im=True,
-        probabilities=True,
-        shfile=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(inhomogeneities_dir))
-    tpm = glob.glob(os.path.join(inhomogeneities_dir, "*_prob_*.nii.gz"))
-    tsm = glob.glob(os.path.join(inhomogeneities_dir, "*_pve_*.nii.gz"))
-    segmentation_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_seg.nii.gz"))[0]
-    bias_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_bias.nii.gz"))[0]
-    biascorrected_anatfile = glob.glob(
-        os.path.join(inhomogeneities_dir, "*_restore.nii.gz"))[0]
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Antomical tissues: {0}.".format(segmentation_anatfile))
-    print("[result] Antomical bias field: {0}.".format(bias_anatfile))
-    print("[result] Antomical bias corrected: {0}.".format(
-        biascorrected_anatfile))
-    print("-" * 50)
-
-
-"""
-Coregistration.
-"""
-coregistration_dir = os.path.join(subjdir, STEPS["coregistration"])
-if not os.path.isdir(coregistration_dir):
-    os.mkdir(coregistration_dir)
-    if coregistration_trf is not None:
-        shutil.copy(coregistration_trf, coregistration_dir)
-    (register_func_meanfile, register_func_mean_maskfile,
-     native_func_mean_maskfile, align_coregfile) = jip_align(
-        source_file=realign_func_meanfile,
-        target_file=biascorrected_anatfile,
-        outdir=coregistration_dir,
-        jipdir=jipdir,
-        prefix="w",
-        auto=args.auto,
-        non_linear=False,
-        fslconfig=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(coregistration_dir))
-    register_func_meanfile = glob.glob(
-        os.path.join(coregistration_dir, "wrd*.nii.gz"))[0]
-    register_func_mean_maskfile = glob.glob(
-        os.path.join(coregistration_dir, "mwrd*.nii.gz"))[0]
-    native_func_mean_maskfile = glob.glob(
-        os.path.join(coregistration_dir, "nwmwrd*.nii.gz"))[0]
-    align_coregfile = os.path.join(coregistration_dir, "align.com")
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Func mean in T1 space: {0}.".format(register_func_meanfile))
-    print("[result] Masked func mean in T1 space: {0}.".format(
-        register_func_mean_maskfile))
-    print("[result] Masked func mean in native space: {0}.".format(
-        native_func_mean_maskfile))
-    print("[result] Alignement file: {0}.".format(align_coregfile))
-    print("-" * 50)
-
-# Early stop detected
-if args.recon2:
-    print("[warn] User requested a processing early stop. Remove the 'recon2' "
-          "option to resume.")
-    sys.exit(0)
-
-
-"""
-Wrap functional: resample the functional serie and mask the registered serie.
-"""
-wrap_dir = os.path.join(subjdir, STEPS["wrap"])
-if not os.path.isdir(wrap_dir):
-    os.mkdir(wrap_dir)
-    deformed_files = apply_jip_align(
-        apply_to_files=[realign_funcfile],
-        align_with=[align_coregfile, align_normfile],
-        outdir=wrap_dir,
-        jipdir=jipdir,
-        prefix="w",
-        apply_inv=False)
-    register_funcfile = deformed_files[0]
-    register_func_mask_fileroot = os.path.join(
-        wrap_dir, "m" + os.path.basename(register_funcfile).split(".")[0])
-    register_func_maskfile = apply_mask(
-        input_file=register_funcfile,
-        output_fileroot=register_func_mask_fileroot,
-        mask_file=template,
-        fslconfig=fsl_config)
-else:
-    print("Using cached version in '{0}'.".format(wrap_dir))
-    register_funcfile = glob.glob(os.path.join(wrap_dir, "w*.nii.gz"))[0]
-    register_func_maskfile = glob.glob(os.path.join(wrap_dir, "mw*.nii.gz"))[0]
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Func in template space: {0}.".format(register_funcfile))
-    print("[result] Masked func in template space: {0}.".format(register_func_maskfile))
-    print("-" * 50)
-
-
-"""
-Smooth the functional serie.
-"""
-smooth_dir = os.path.join(subjdir, STEPS["smooth"])
-if not os.path.isdir(smooth_dir):
-    os.mkdir(smooth_dir)
-    interface = fsl.Smooth()
-    returncode = interface.run(
-        in_file=register_func_maskfile,
-        fwhm=kernel_size,
-        output_type="NIFTI",
-        smoothed_file=os.path.join(
-            smooth_dir,
-            "smooth_" + os.path.basename(register_func_maskfile).split(".")[0] +
-            ".nii"))
-    smooth_outputs = returncode.outputs.get()
-    smoothed_file = smooth_outputs["smoothed_file"]
-else:
-    print("Using cached version in '{0}'.".format(smooth_dir))
-    smoothed_file = glob.glob(os.path.join(smooth_dir, "smooth_*.nii"))[0]
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] Smoothed functional: {0}.".format(smoothed_file))
-    print("-" * 50)
-
-
-"""
-Copy the results to the root directory: use Nifti format.
-"""
-nibabel.load(smoothed_file).to_filename(
-    os.path.join(subjdir, "sMNI.nii"))
-nibabel.load(register_func_maskfile).to_filename(
-    os.path.join(subjdir, "MNI.nii"))
-nibabel.load(register_anat_maskfile).to_filename(
-    os.path.join(subjdir, "anat.nii"))
-
-
-"""
-Compute some snaps assessing the different processing steps.
-"""
-snapdir = os.path.join(subjdir, STEPS["snaps"])
-if not os.path.isdir(snapdir):
-    os.mkdir(snapdir)
-    # > generate QA on functional time serie
-    qa_files = []
-    for path, title in [([standard_funcfile], "qa_plot_before_correction_{0}.png"),
-                        ([realign_funcfile], "qa_plot_after_correction_{0}.png")]:
-        diff_results = multi_session_time_slice_diffs(path)
-        axes = plot_tsdiffs(diff_results, use_same_figure=False)
-        figures = [ax.get_figure() for ax in axes]
-        template_file = os.path.join(snapdir, title)
-        qa_filenames = [template_file.format(i) for i in range(len(figures))]
-        for fig, fname in zip(figures, qa_filenames):
-            fig.savefig(fname, bbox_inches="tight", dpi=200)
-            plt.close(fig)
-            qa_files.append(fname)
-    # > generate tissue segmentation plots
-    tissue_files = []
-    for cnt, path in enumerate(tsm):
-        tissue_file = os.path.join(snapdir, "fast_tissue_{0}.png".format(cnt))
-        plot_segmentation(
-            biascorrected_anatfile,
-            path,
-            output_filename=tissue_file,
-            cut_coords=(-10, 20, 5),
-            cmap=None,
-            title="Segmentation tissue {0}".format(cnt),
-            close=True)
-        tissue_files.append(tissue_file)
-    # > generate a motion parameter plot
-    realign_motion_file = os.path.join(snapdir, "realign_motion_parameters.png")
-    plot_spm_motion_parameters(
-        realign_func_parfile,
-        title="Realign: estimated motion.")
-    plt.savefig(realign_motion_file, bbox_inches="tight", dpi=200)
-    plt.close()
-    # > generate coregistration plot
-    coregister_file = os.path.join(snapdir, "coregister.png")
-    plot_registration(
-        register_func_meanfile,
-        standard_anatfile,
-        output_filename=coregister_file,
-        close=True,
-        cut_coords=(-10, 20, 5),
-        title="Coregister outline.")
-    # > generate normalization plot
-    normalize_file = os.path.join(snapdir, "normalization.png")
-    plot_registration(
-        template,
-        register_anatfile,
-        output_filename=normalize_file,
-        close=True,
-        cut_coords=(-10, 0, 5),
-        title="Normalization outline.")
-else:
-    print("Using cached version in '{0}'.".format(snapdir))
-    qa_files = glob.glob(os.path.join(snapdir, "qa_*.png"))
-    tissue_files = glob.glob(os.path.join(snapdir, "fast_*.png"))
-    realign_motion_file = os.path.join(snapdir, "realign_motion_parameters.png")
-    coregister_file = os.path.join(snapdir, "coregister.png")
-    normalize_file = os.path.join(snapdir, "normalization.png")
-if args.verbose > 0:
-    print("-" * 50)
-    print("[result] QA: {0}.".format(qa_files))
-    print("[result] White matter: {0}.".format(tissue_files))
-    print("[result] Realign: {0}.".format(realign_motion_file))
-    print("[result] Coregister: {0}.".format(coregister_file))
-    print("[result] Normalize: {0}.".format(normalize_file))
-    print("-" * 50)
-
-
-"""
-Generate a QC reporting
-"""
-reportdir = os.path.join(subjdir, STEPS["report"])
-reportfile = os.path.join(reportdir, "QC_preproc_{0}.pdf".format(sid))
-if not os.path.isdir(reportdir):
-    os.mkdir(reportdir)
-    tic = datetime.now()
-    generate_pdf(
-        datapath=snapdir,
-        struct_file=os.path.join(
-            os.path.abspath(os.path.dirname(pypreclin.__file__)), "utils",
-            "resources", "pypreclin_qcpreproc.json"),
-        author="NeuroSpin",
-        client="-",
-        poweredby="FSL-SPM-Nipype-PyPreProcess",
-        project="-",
-        timepoint="-",
-        subject=sid,
-        date="{0}-{1}-{2}".format(tic.year, tic.month, tic.day),
-        title="fMRI Preprocessing QC Reporting",
-        filename=reportfile,
-        pagesize=None,
-        left_margin=10,
-        right_margin=10,
-        top_margin=20,
-        bottom_margin=20,
-        show_boundary=False,
-        verbose=0)
-else:
-    print("Using cached version in '{0}'.".format(reportdir))
-if args.verbose > 1:
-    print("-" * 50)
-    print("[result] Report: {0}.".format(reportfile))
-    print("-" * 50)
+outputs = preproc(verbose=verbose, **inputs)
 
 
 """
 Update the outputs and save them and the inputs in a 'logs' directory.
 """
-logdir = os.path.join(subjdir, "logs")
+logdir = os.path.join(inputs["outdir"], "logs")
+tic = datetime.now()
+date = "{0}-{1}-{2}".format(tic.year, tic.month, tic.day)
 if not os.path.isdir(logdir):
     os.mkdir(logdir)
-params = locals()
-outputs = dict([(name, params[name])
-               for name in ("standard_funcfile", "standard_anatfile", 
-                            "realign_funcfile", "realign_func_meanfile", 
-                            "register_anatfile", "register_anat_maskfile",
-                            "native_anat_maskfile", "align_normfile",
-                            "segmentation_anatfile", "bias_anatfile",
-                            "biascorrected_anatfile", "register_func_meanfile",
-                            "register_func_mean_maskfile", "align_coregfile",
-                            "native_func_mean_maskfile", "register_funcfile",
-                            "register_func_maskfile", "qa_files",
-                            "tissue_files", "realign_motion_file",
-                            "coregister_file", "normalize_file",
-                            "reportfile", "slice_time_corrected_file",
-                            "b0_corrected_file")])
 for name, final_struct in [("inputs", inputs), ("outputs", outputs),
                            ("runtime", runtime)]:
-    log_file = os.path.join(logdir, "{0}.json".format(name))
+    log_file = os.path.join(logdir, "{0}_{1}.json".format(name, date))
     with open(log_file, "wt") as open_file:
         json.dump(final_struct, open_file, sort_keys=True, check_circular=True,
                   indent=4)
-if args.verbose > 1:
+if verbose > 1:
     print("[final]")
     pprint(outputs)
 

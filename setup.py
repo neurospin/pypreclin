@@ -20,11 +20,15 @@ with open(infopath) as open_file:
     exec(open_file.read(), release_info)
 pkgdata = {
     "pypreclin": [
+        os.path.join("apps", "*.json"),
         os.path.join("utils", "resources", "*.json"),
         os.path.join("preproc", "resources", "*.com")]
 }
 scripts = [
-    "pypreclin/scripts/pypreclin_preproc_fmri"
+    os.path.join("pypreclin", "scripts", "pypreclin_preproc_fmri"),
+    os.path.join("pypreclin", "scripts", "pypreclin_prepare_target"),
+    os.path.join("pypreclin", "scripts", "pypreclin_preproc_multi_fmri"),
+    os.path.join("pypreclin", "apps", "pypreclinview")
 ]
 
 setup(

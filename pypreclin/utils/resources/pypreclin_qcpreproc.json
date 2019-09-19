@@ -4,20 +4,6 @@
     },
     "page1": {
         "type": "triplanar",
-        "style": "OneCol",
-        "images": [
-            ["fast_tissue_0.png"],
-            ["fast_tissue_1.png"],
-            ["fast_tissue_2.png"]
-        ],
-        "texts": [
-            "White matter automatic segmentation."
-        ],
-        "topmargin": 0.05,
-        "linecount": 100
-    },
-    "page2": {
-        "type": "triplanar",
         "style": "OneColLandscape",
         "images": [
             ["realign_motion_parameters.png"]
@@ -28,11 +14,11 @@
         "topmargin": 0.1,
         "linecount": 120
     },
-    "page3": {
+    "page2": {
         "type": "triplanar",
         "style": "OneColLandscape",
         "images": [
-            ["coregister.png"]
+            ["coregister_ortho.png"]
         ],
         "texts": [
             "The subject's functional images have been coregistered to their anatomical image."
@@ -40,80 +26,16 @@
         "topmargin": 0.1,
         "linecount": 120
     },
-    "page4": {
+    "page3": {
         "type": "triplanar",
         "style": "OneColLandscape",
         "images": [
-            ["normalization.png"]
+            ["normalization_ortho.png"]
         ],
         "texts": [
             "Deformations from native to standard space have been learnt on the anatomically brain. These deformations have been used to warp the functional and anatomical images into standard space."
         ],
         "topmargin": 0.1,
         "linecount": 120
-    },
-    "page5": {
-        "type": "triplanar",
-        "style": "TwoCol",
-        "images": [
-            ["qa_plot_before_correction_0.png"],
-            ["qa_plot_before_correction_1.png"],
-            ["qa_plot_before_correction_2.png"],
-            ["qa_plot_after_correction_0.png"],
-            ["qa_plot_after_correction_1.png"],
-            ["qa_plot_after_correction_2.png"]
-        ],
-        "texts": [
-            "The functional volume quality assessment BEFORE correction.",
-            "The functional volume quality assessment AFTER correction."
-        ],
-        "topmargin": 0.075,
-        "linecount": 41
-    },
-    "page6": {
-        "type": "triplanar",
-        "style": "TwoCol",
-        "images": [
-            ["qa_plot_before_correction_3.png"],
-            [null],
-            [null],
-            ["qa_plot_after_correction_3.png"],
-            [null],
-            [null]
-        ],
-        "texts": [
-            "The functional volume quality assessment BEFORE correction.",
-            "The functional volume quality assessment AFTER correction."
-        ],
-        "topmargin": 0.075,
-        "linecount": 41
-    },
-    "page7": {
-        "type": "triplanar",
-        "style": "OneCol",
-        "images": [
-            ["qa_plot_before_correction_4.png"],
-            ["qa_plot_after_correction_4.png"],
-            [null]
-        ],
-        "texts": [
-            "The mean squared difference BEFORE and AFTER correction."
-        ],
-        "topmargin": 0.05,
-        "linecount": 100
-    },
-    "page8": {
-        "type": "triplanar",
-        "style": "OneCol",
-        "images": [
-            ["qa_plot_before_correction_5.png"],
-            ["qa_plot_after_correction_5.png"],
-            [null]
-        ],
-        "texts": [
-            "The maximum squared difference BEFORE and AFTER correction."
-        ],
-        "topmargin": 0.05,
-        "linecount": 100
     }
 }

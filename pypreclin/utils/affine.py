@@ -6,8 +6,14 @@
 # for details.
 ##########################################################################
 
+
+"""
+Tools to play with affine matrices.
+"""
+
+
 # Package import
-from quaternions import mat2quat, quat2axangle
+from transforms3d.quaternions import mat2quat, quat2axangle
 
 # Third party import
 import numpy
@@ -108,13 +114,17 @@ def rotation_mat2vec(rotation):
 def rotation_vec2mat(r):
     """ The rotation matrix is given by the Rodrigues formula:
 
-    R = Id + sin(theta)*Sn + (1-cos(theta))*Sn^2
+    .. math::
+
+        R = Id + sin(theta)*Sn + (1-cos(theta))*Sn^2
 
     with:
 
-           0  -nz  ny
-    Sn =   nz   0 -nx
-          -ny  nx   0
+    .. math::
+
+               0  -nz  ny
+        Sn =   nz   0 -nx
+              -ny  nx   0
 
     where n = r / ||r||
 
@@ -122,11 +132,15 @@ def rotation_vec2mat(r):
     to numerical instabilities. We instead use a Taylor expansion
     around theta=0:
 
-    R = I + sin(theta)/tetha Sr + (1-cos(theta))/teta2 Sr^2
+    .. math::
+
+        R = I + sin(theta)/tetha Sr + (1-cos(theta))/teta2 Sr^2
 
     leading to:
 
-    R = I + (1-theta2/6)*Sr + (1/2-theta2/24)*Sr^2
+    .. math::
+
+        R = I + (1-theta2/6)*Sr + (1/2-theta2/24)*Sr^2
 
     To avoid numerical instabilities, an upper threshold is applied to
     the angle. It is chosen to be a multiple of 2*pi, hence the

@@ -32,37 +32,35 @@ CLASSIFIERS = ["Development Status :: 5 - Production/Stable",
 
 # Project descriptions
 description = """
-PYthon Preprocessing for Clinical data.
+Python processing for PreClinical data.
 """
 SUMMARY = """
 .. container:: summary-carousel
 
-    pyPreClin is a Python module for **preprocessing clinical data** that
-    offers:
+    pypreclin is a Python module for **processing preclinical data** (non-human
+    primate) that offers:
 
-    * a script to pre-process fMRI data.
+    * pypreclin_preproc_fmri: a script to pre-process fMRI data.
+    * pypreclin_prepare_target: a script to perform B0 ihomogeneities
+      correction using a non linear registration to the anatomical image.
+    * pypreclin_preproc_multi_fmri: a script to pre-process BIDS fMRI data.
 """
-long_description = """
-=========
-pyPreClin
-=========
-
-pyPreClin is a Python project that provides a collection of python scripts for
-preprocessing MRI preclinical datasets.
-This work is made available by a community of people, amoung which the
-CEA Neurospin UNATI and CEA NeuroSpin UNICOG laboratories, in particular
-A. Grigis, J. Tasserie, and B. Jarraya.
-"""
+long_description = (
+    "pypreclin is a Python project that provides a collection of Python "
+    "scripts for processing MRI preclinical datasets. This work is made "
+    "available by a community of people, amoung which the CEA Neurospin "
+    "UNATI and CEA NeuroSpin UNICOG laboratories, in particular A. Grigis, "
+    "J. Tasserie, and B. Jarraya.\n")
 
 # Main setup parameters
-NAME = "pyPreClin"
+NAME = "pypreclin"
 ORGANISATION = "CEA"
 MAINTAINER = "Antoine Grigis"
 MAINTAINER_EMAIL = "antoine.grigis@cea.fr"
 DESCRIPTION = description
 LONG_DESCRIPTION = long_description
-URL = "https://bioproj.extra.cea.fr/"
-DOWNLOAD_URL = "https://bioproj.extra.cea.fr/"
+URL = "https://github.com/neurospin/pypreclin"
+DOWNLOAD_URL = "https://github.com/neurospin/pypreclin"
 LICENSE = "CeCILL-B"
 CLASSIFIERS = CLASSIFIERS
 AUTHOR = """
@@ -78,15 +76,19 @@ PROVIDES = ["pypreclin"]
 REQUIRES = [
     "numpy>=1.11.0",
     "scipy>=0.17.0",
-    "hopla>=1.0.4",
-    "bredala>=1.0.3",
-    "pyconnectome>=1.0.0",
+    "hopla>=1.0.5",
+    "pyconnectome[standalone]>=1.0.0",
     "pyconnectomist>=2.0.0",
     "nipype>=1.0.1",
-    "matplotlib>=1.5.1",
-    "nibabel>=1.1.0"]
+    "matplotlib==3.0.3",
+    "nibabel>=1.1.0",
+    "joblib>=0.13.2",
+    "transforms3d>=0.3.1",
+    "filelock>=3.0.12"]
 EXTRA_REQUIRES = {
-    "wip": {
-        "pypreprocess>=0.1.0"
+    "gui": {
+        "python-pypipe>=0.0.1"
     }
 }
+EXTRANAME = "UNICOG"
+EXTRAURL = "http://www.unicog.org/site_2016/"

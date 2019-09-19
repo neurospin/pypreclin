@@ -6,6 +6,11 @@
 # for details.
 ##########################################################################
 
+
+"""
+deprecated
+"""
+
 # System import
 import subprocess
 import fcntl

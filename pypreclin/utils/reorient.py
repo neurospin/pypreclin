@@ -106,8 +106,7 @@ def reorient_image(in_file, axes="RAS", prefix="swap", output_directory=None):
     rotation = swap_affine(axes)
     det = numpy.linalg.det(rotation)
     if det != 1:
-        raise Exception("Rotation matrix determinant must be one "
-                        "not '{0}'.".format(det))
+        print("Rotation matrix determinant must be one not '{0}'.".format(det))
 
     # Load the image to rectify
     image = nibabel.load(in_file)
@@ -161,7 +160,7 @@ def check_orientation(in_files):
     Parameters
     ----------
     in_files: str or list of str (mandatory)
-        the first input image.
+        some images.
 
     Returns
     -------
@@ -173,6 +172,23 @@ def check_orientation(in_files):
     orients = []
     for path in in_files:
         im = nibabel.load(path)
-        orients.append(nibabel.aff2axcodes(im.affine))
-    return all([elem == orients[0] for elem in orients])
+        orients.append("".join(nibabel.aff2axcodes(im.affine)))
+    return all([elem == orients[0] for elem in orients]), orients
+
+
+def guess_orientation(in_file):
+    """ Return an image orientation.
+
+    Parameters
+    ----------
+    in_files: str or list of str (mandatory)
+        an image.
+
+    Returns
+    -------
+    axes: str
+        the image orientation.
+    """
+    im = nibabel.load(in_file)
+    return "".join(nibabel.aff2axcodes(im.affine))
     

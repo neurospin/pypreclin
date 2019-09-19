@@ -1,0 +1,274 @@
+#! /usr/bin/env python3
+##########################################################################
+# NSAp - Copyright (C) CEA, 2013 - 2019
+# Distributed under the terms of the CeCILL-B license, as published by
+# the CEA-CNRS-INRIA. Refer to the LICENSE file or to
+# http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html
+# for details.
+##########################################################################
+
+# System import
+from __future__ import print_function
+import os
+import sys
+import shutil
+import json
+import argparse
+import textwrap
+from pprint import pprint
+from datetime import datetime
+from argparse import RawTextHelpFormatter
+
+# Module import
+from pypreclin import DEFAULT_FSL_PATH
+from pypreclin import __version__ as version
+from pypreclin.utils.reorient import check_orientation
+from pypreclin.preproc.register import jip_align
+from pypreclin.preproc.register import apply_jip_align
+
+# Third party import
+from pyconnectome.utils.filetools import extract_image
+from pyconnectome.utils.filetools import apply_mask
+from joblib import Memory as JoblibMemory
+
+
+# Global parameters
+STEPS = {
+    "normalization": "1-Normalization",
+    "warp": "2-Warp"
+}
+
+
+# Command line
+DOC = """
+Extract a volume of the functional image and undist this volume using the
+anatomical as a reference with no artifact.
+
+python3 $HOME/git/preprocessing_monkey/pypreclin/scripts/pypreclin_prepare_target \
+    -o /neurospin/lbi/monkeyfmri/PRIME_DE_database/ecnu_kwok/site-ecnu_kwok/derivatives/target/sub-032210/ses-001/run-1 \
+    -s sub-032210 \
+    -f /neurospin/lbi/monkeyfmri/PRIME_DE_database/ecnu_kwok/site-ecnu_kwok/derivatives/preproc/sub-032210/ses-001/run-1/sub-032210/3-Reorient/doants_WarpToTemplate.nii.gz \
+    -a /neurospin/lbi/monkeyfmri/PRIME_DE_database/ecnu_kwok/site-ecnu_kwok/derivatives/preproc/sub-032210/ses-001/run-1/sub-032210/5-Normalization/nwmwdosub-032210_ses-001_run-1_T1w.nii.gz \
+    -j /home/ag239446/local/jip-Linux-x86_64/bin \
+    -V 2 \
+    -C /etc/fsl/5.0/fsl.sh
+"""
+
+def is_file(filearg):
+    """ Type for argparse - checks that file exists but does not open.
+    """
+    if not os.path.isfile(filearg):
+        raise argparse.ArgumentError(
+            "The file '{0}' does not exist!".format(filearg))
+    return filearg
+
+
+def is_directory(dirarg):
+    """ Type for argparse - checks that directory exists.
+    """
+    if not os.path.isdir(dirarg):
+        raise argparse.ArgumentError(
+            "The directory '{0}' does not exist!".format(dirarg))
+    return dirarg
+
+
+class Range(object):
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+    def __eq__(self, other):
+        return self.start <= other <= self.end
+    def __repr__(self):
+        return "{0}-{1}".format(self.start, self.end)
+
+
+def get_cmd_line_args():
+    """
+    Create a command line argument parser and return a dict mapping
+    <argument name> -> <argument value>.
+    """
+    parser = argparse.ArgumentParser(
+        prog="pypreclin_prepare_target",
+        description=textwrap.dedent(DOC),
+        formatter_class=RawTextHelpFormatter)
+
+    # Required arguments
+    required = parser.add_argument_group("required arguments")
+    required.add_argument(
+        "-f", "--funcfile",
+        required=True,
+        type=is_file,
+        metavar="<funcfile>",
+        help="path to the fMRI NIFTI file.")
+    required.add_argument(
+        "-a", "--anatfile",
+        required=True,
+        type=is_file,
+        metavar="<anatfile>",
+        help="path to the anatomical brain extracted NIFTI file.")
+    required.add_argument(
+        "-s", "--sid",
+        required=True,
+        metavar="<subject id>",
+        help="the subject identifier.")
+    required.add_argument(
+        "-o", "--outdir",
+        required=True,
+        metavar="<outdir>",
+        help="the destination folder where the data will be generated.")
+    required.add_argument(
+        "-j", "--jipdir",
+        type=is_directory,
+        required=True,
+        metavar="<jip path>",
+        help="the jip software binary path.")
+
+    # Optional arguments
+    parser.add_argument(
+        "-V", "--verbose",
+        type=int,
+        choices=[0, 1, 2],
+        default=0,
+        metavar="<verbose>",
+        help="the verbosity level: 0 silent, >0 verbose.")
+    parser.add_argument(
+        "-E", "--erase",
+        action="store_true",
+        help="if set clean the destination folder if it exists.")
+    parser.add_argument(
+        "-WI", "--warp-index",
+        type=int,
+        default=8,
+        help="use this parameter to specify the reference volume index in the "
+             "timeserie.")
+    parser.add_argument(
+        "-C", "--fslconfig",
+        type=is_file,
+        metavar="<fsl config>",
+        help="the FSL configuration script.")
+
+    # Create a dict of arguments to pass to the 'main' function
+    args = parser.parse_args()
+    kwargs = vars(args)
+    if kwargs["fslconfig"] is None:
+        kwargs["fslconfig"] = DEFAULT_FSL_PATH
+    verbose = kwargs.pop("verbose")
+
+    return kwargs, verbose
+
+
+"""
+Parse the command line.
+"""
+inputs, verbose = get_cmd_line_args()
+runtime = {
+    "tool": "pypreclin_prepare",
+    "tool_version": version,
+    "timestamp": datetime.now().isoformat()
+}
+if verbose > 0:   
+    pprint("[info] Starting fMRI prepare target...")
+    pprint("-" * 50)
+    pprint("[info] Runtime:")
+    pprint(runtime)
+    pprint("[info] Inputs:")
+    pprint(inputs)
+    pprint("-" * 50)
+
+
+"""
+Read input parameters
+"""
+subjdir = os.path.join(inputs["outdir"], inputs["sid"])
+cachedir = os.path.join(subjdir, "cachedir")
+outputs = {}
+if inputs["erase"] and os.path.isdir(subjdir):
+    shutil.rmtree(subjdir)
+if not os.path.isdir(cachedir):
+    os.makedirs(cachedir)
+joblib_memory = JoblibMemory(cachedir, verbose=verbose)
+def display_outputs(outputs, verbose, **kwargs):
+    """ Simple function to display/store step outputs.
+    """
+    if verbose > 0:
+        print("-" * 50)
+        for key, val in kwargs.items():
+            print("{0}: {1}".format(key, val))
+        print("-" * 50)
+    outputs.update(kwargs)
+
+
+"""
+Check inputs
+"""
+interface = joblib_memory.cache(check_orientation)
+same_orient, orients = interface([inputs["funcfile"], inputs["anatfile"]])
+func_orient, anat_orient = orients
+if not same_orient:
+    raise ValueError(
+        "Source file '{0}' ({2}) and taget file '{1}' ({3}) must have "
+        "the same orientation for JIP to work properly.".format(
+            inputs["funcfile"], inputs["anatfile"], func_orient, anat_orient))
+display_outputs(
+    outputs, verbose, func_orient=func_orient, anat_orient=anat_orient)
+
+
+"""
+Normalize data
+"""
+normalization_dir = os.path.join(subjdir, STEPS["normalization"])
+if not os.path.isdir(normalization_dir):
+    os.mkdir(normalization_dir)
+interface = joblib_memory.cache(extract_image)
+refvol_file = os.path.join(normalization_dir, "refvol.nii.gz")
+interface(inputs["funcfile"], inputs["warp_index"], out_file=refvol_file)
+interface = joblib_memory.cache(jip_align)
+(register_file, register_maskfile, native_maskfile, align_file) = interface(
+    source_file=refvol_file,
+    target_file=inputs["anatfile"],
+    outdir=normalization_dir,
+    jipdir=inputs["jipdir"],
+    prefix="w",
+    auto=False,
+    non_linear=True,
+    fslconfig=inputs["fslconfig"])
+display_outputs(
+    outputs, verbose, register_file=register_file,
+    register_maskfile=register_maskfile, native_maskfile=native_maskfile,
+    align_file=align_file)
+
+
+"""
+Warp functional
+"""
+wrap_dir = os.path.join(subjdir, STEPS["warp"])
+if not os.path.isdir(wrap_dir):
+    os.mkdir(wrap_dir)
+interface = joblib_memory.cache(apply_jip_align)
+deformed_files = interface(
+    apply_to_files=[inputs["funcfile"]],
+    align_with=[align_file],
+    outdir=wrap_dir,
+    jipdir=inputs["jipdir"],
+    prefix="w",
+    apply_inv=False)
+register_funcfile = deformed_files[0]
+register_func_mask_fileroot = os.path.join(
+    wrap_dir, "m" + os.path.basename(register_funcfile).split(".")[0])
+interface = joblib_memory.cache(apply_mask)
+register_func_maskfile = interface(
+    input_file=register_funcfile,
+    output_fileroot=register_func_mask_fileroot,
+    mask_file=inputs["anatfile"],
+    fslconfig=inputs["fslconfig"])
+display_outputs(
+    outputs, verbose, register_funcfile=register_funcfile,
+    register_func_maskfile=register_func_maskfile)
+
+
+"""
+Bye
+"""
+if verbose > 1:
+    print("[final]")
+    pprint(outputs)
