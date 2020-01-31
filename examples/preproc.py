@@ -40,12 +40,13 @@ from pprint import pprint
 #
 # Note: pypreclin needs external softwares. If you want to install them from
 # your terminal on an Ubuntu computer you can run the following commands:
+#::
 #
-# sudo apt install fsl-5.0-complete ants -y
-# sudo ln -s /usr/lib/ants/N4BiasFieldCorrection /usr/bin
-# wget https://www.nitrc.org/frs/download.php/7446/jip-Linux-x86_64.tar.gz
-# tar xvzf jip-Linux-x86_64.tar.gz 
-# rm jip-Linux-x86_64.tar.gz
+#   sudo apt install fsl-5.0-complete ants -y
+#   sudo ln -s /usr/lib/ants/N4BiasFieldCorrection /usr/bin
+#   wget https://www.nitrc.org/frs/download.php/7446/jip-Linux-x86_64.tar.gz
+#   tar xvzf jip-Linux-x86_64.tar.gz 
+#   rm jip-Linux-x86_64.tar.gz
 #
 # In order to avoid the installation
 # of all dependencies, please use the provided container.
