@@ -14,6 +14,6 @@
 ###########
 build/
 dist/
-pyPreClin.egg-info/
+pypreclin.egg-info/
 __pycache__/
 .eggs/
