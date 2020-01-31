@@ -202,9 +202,9 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
     # Check input image orientation: must be the same
     same_orient, orients = check_orientation([source_file, target_file])
     if not same_orient:
-        raise ValueError(
-            "Source file '{0}' ({2}) and taget file '{1}' ({3}) must have "
-            "the same orientation for JIP to work properly.".format(
+        print(
+            "[WARNING] Source file '{0}' ({2}) and taget file '{1}' ({3})
+            "must have the same orientation for JIP to work properly.".format(
                 source_file, target_file, orients[0], orients[1]))
 
     # Try to init the affine deformation
