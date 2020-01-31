@@ -92,6 +92,30 @@ To use it install first Singularity. On Debian/Ubuntu the package is called
 singularity-container. You can check that Singularity is installed by
 typing singularity --help in a terminal.
 
+Example: we assume that in the '/volatile/pypreclin' direcctory you have a functional
+data 'func.nii', a structural data 'anat.nii' and a template
+'mni-resampled_1by1by1.nii'.
+
+::
+
+	wget http://biodev.cea.fr/pypreclin/pypreclin-ubuntu.simg
+	mkdir /volatile/pypreclin/outputs
+	sudo apt install singularity-container
+	sudo nano /etc/singularity/singularity.conf
+		mount home = no 
+	singularity run --cleanenv --bind /volatile/pypreclin pypreclin-ubuntu.simg \
+	    -V 2 \
+	    -o /volatile/pypreclin/outputs \
+	    -s test \
+	    -f /volatile/pypreclin/func.nii \
+	    -a /volatile/pypreclin/anat.nii \
+	    -r 2.40 \
+	    -t /volatile/pypreclin/mni-resampled_1by1by1.nii \
+	    -NA RIA \
+	    -NF RIA \
+	    -C /etc/fsl/5.0/fsl.sh \
+	    -j /i2bm/local/jip-Linux-x86_64/bi
+
 
 
 
