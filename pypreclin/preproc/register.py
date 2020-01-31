@@ -203,7 +203,7 @@ def jip_align(source_file, target_file, outdir, jipdir, prefix="w",
     same_orient, orients = check_orientation([source_file, target_file])
     if not same_orient:
         print(
-            "[WARNING] Source file '{0}' ({2}) and taget file '{1}' ({3})
+            "[WARNING] Source file '{0}' ({2}) and taget file '{1}' ({3}) "
             "must have the same orientation for JIP to work properly.".format(
                 source_file, target_file, orients[0], orients[1]))
 
