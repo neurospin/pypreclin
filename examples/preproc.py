@@ -34,7 +34,7 @@ from pprint import pprint
 # -------------------
 #
 # Now load a toy single run dataset with 10 volumes (it will be faster).
-# We assume here that in your current working direcctory you have a functionl
+# We assume here that in your current working directory you have a functional
 # data 'func.nii', a structural data 'anat.nii' and a template
 # 'mni-resampled_1by1by1.nii'.
 #
