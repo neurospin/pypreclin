@@ -152,8 +152,12 @@ def preproc(
         blip_enc_dirs = eval(blip_enc_dirs)
 
     # Read input parameters
+    funcfile = os.path.abspath(funcfile)
+    anatfile = os.path.abspath(anatfile)
+    template = os.path.abspath(template)
+    jipdir = os.path.abspath(jipdir)
     realign_to_mean = not realign_to_vol
-    subjdir = os.path.join(outdir, sid)
+    subjdir = os.path.join(os.path.abspath(outdir), sid)
     cachedir = os.path.join(subjdir, "cachedir")
     outputs = {}
     if erase and os.path.isdir(subjdir):
@@ -329,7 +333,8 @@ def preproc(
     if not os.path.isdir(normalization_dir):
         os.mkdir(normalization_dir)
     if normalization_trf is not None:
-        shutil.copy(normalization_trf, normalization_dir)
+        shutil.copyfile(
+            normalization_trf, os.path.join(normalization_dir, "align.com"))
     interface = joblib_memory.cache(jip_align)
     (register_anatfile, register_anat_maskfile,
      native_anat_maskfile, align_normfile) = interface(
