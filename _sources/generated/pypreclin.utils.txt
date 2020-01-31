@@ -1,0 +1,64 @@
+.. AUTO-GENERATED FILE -- DO NOT EDIT!
+
+:orphan:
+
+API documentation of *pypreclin.utils*
+=======================================
+
+
+Utility functions to process preclinical datasets.
+
+
+.. raw:: html
+
+    <br/>    <!-- Block section -->
+    <table border='1' class='docutils' style='width:100%'>
+    <colgroup><col width='25%'/><col width='75%'/></colgroup>
+    <tbody valign='top'>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pypreclin.utils.quaternions.html'><em>pypreclin.utils.quaternions</em></a></td>
+    <td>
+        <p>Functions to operate on, or return, quaternions.</p>
+    <p>The module also includes functions for the closely related angle, axis
+    pair as a specification for rotation.</p>
+    <p>Quaternions here consist of 4 values <tt class="docutils literal">w, x, y, z</tt>, where <tt class="docutils literal">w</tt> is the
+    real (scalar) part, and <tt class="docutils literal">x, y, z</tt> are the complex (vector) part.</p>
+    <p>Note - rotation matrices here apply to column vectors, that is,
+    they are applied on the left of the vector.  For example:</p>
+    <pre class="doctest-block">
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; q = [0, 1, 0, 0] # 180 degree rotation around axis 0
+    &gt;&gt;&gt; M = quat2mat(q) # from this module
+    &gt;&gt;&gt; vec = np.array([1, 2, 3]).reshape((3,1)) # column vector
+    &gt;&gt;&gt; tvec = np.dot(M, vec)
+    </pre>
+    </td>
+    </tr>
+    <tr class='row-even'>
+    <td><a class='reference internal' href='pypreclin.utils.affine.html'><em>pypreclin.utils.affine</em></a></td>
+    <td>
+        <p>Tools to play with affine matrices.</p>
+    </td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pypreclin.utils.export.html'><em>pypreclin.utils.export</em></a></td>
+    <td>
+        <p>Module that contains export utilities.</p>
+    </td>
+    </tr>
+    <tr class='row-even'>
+    <td><a class='reference internal' href='pypreclin.utils.reorient.html'><em>pypreclin.utils.reorient</em></a></td>
+    <td>
+        <p>Module that can be used to reorient images.</p>
+    </td>
+    </tr>
+    <tr class='row-odd'>
+    <td><a class='reference internal' href='pypreclin.utils.filetools.html'><em>pypreclin.utils.filetools</em></a></td>
+    <td>
+        <p>File utilities.</p>
+    </td>
+    </tr>
+    </tbody>
+
+
+    </table>

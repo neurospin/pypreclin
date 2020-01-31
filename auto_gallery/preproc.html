@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+
+		<!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>pypreclin</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+        <link rel="stylesheet" href="../_static/css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="../_static/css/animate.css">
+        <link rel="stylesheet" href="../_static/css/style.css">
+        <link rel="stylesheet" href="../_static/css/jquery.mosaic.css">
+        <link rel="stylesheet" href="../_static/gallery.css">
+        <link rel="stylesheet" href="../_static/css/media-queries.css">
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="../_static/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../_static/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../_static/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../_static/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="../_static/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+
+		<!-- Wrapper -->
+    	<div class="wrapper">
+
+			<!-- Sidebar -->
+			<nav class="sidebar">
+				
+				<!-- close sidebar menu -->
+				<div class="dismiss">
+					<i class="fas fa-arrow-left"></i>
+				</div>
+				
+				<div class="logo"">
+					<h3><a href="index.html">Sidebar Menu</a></h3>
+				</div>
+
+                <!-- info setup -->
+                    <p class="doc-version">
+                        This documentation is for pypreclin <strong>version 1.0.1</strong>
+                    </p>
+                <p class="citing">
+                    If you use the software, please do not hesitate to 
+                    <a &mdash; <a href="https://github.com/neurospin/pypreclin">
+                    Report a Bug</a>.
+                </p>
+				
+                <!-- links -->
+                
+                
+				<ul class="list-unstyled menu-elements">
+					<li class="active">
+						<a href="../index.html"><i class="fas fa-home"></i> Home</a>
+					</li>
+					<li>
+						<a href="../generated/installation.html"><i class="fas fa-cog"></i> Installation</a>
+					</li>
+					<li>
+						<a href="gallery.html"><i class="fas fa-eye"></i> Gallery</a>
+					</li>
+					<li>
+						<a href="../generated/documentation.html"><i class="fas fa-pencil-alt"></i> API documentation</a>
+					</li>
+					<li>
+						<a href="http://www.unicog.org/site_2016/"><i class="fas fa-external-link-alt"></i> UNICOG</a>
+					</li>
+					<li>
+						<a href="#otherSections" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" role="button" aria-controls="otherSections">
+							<i class="fas fa-sync"></i>Sections
+						</a>
+						<ul class="collapse list-unstyled" id="otherSections">
+                            
+                                
+                                    
+                                    
+                                    
+                                
+                                    
+                                    
+                                    
+                                
+                                    
+                                    
+                                    
+							        <li>
+								        <a href="#first-checks">First Checks</a>
+							        </li>
+                                
+                            
+                                
+                                    
+                                    
+                                    
+                                
+                                    
+                                    
+                                    
+							        <li>
+								        <a href="#load-a-test-dataset">Load A Test Dataset</a>
+							        </li>
+                                
+                            
+                                
+                                    
+                                    
+                                    
+                                
+                                    
+                                    
+                                    
+							        <li>
+								        <a href="#run">Run</a>
+							        </li>
+                                
+                            
+                                
+                                    
+                                    
+                                    
+                                
+                            
+                                
+                                    
+                                    
+                                    
+                                
+                            
+						</ul>
+					</li>
+				</ul>
+				
+                <!-- go top page -->
+				<div class="to-top">
+					<a class="btn btn-primary btn-customized-3" href="#" role="button">
+	                    <i class="fas fa-arrow-up"></i> Top
+	                </a>
+				</div>
+			
+                <!-- change color -->
+				<div class="dark-light-buttons">
+					<a class="btn btn-primary btn-customized-4 btn-customized-dark" href="#" role="button">Dark</a>
+					<a class="btn btn-primary btn-customized-4 btn-customized-light" href="#" role="button">Light</a>
+				</div>
+			
+			</nav>
+			<!-- End sidebar -->
+			
+			<!-- Dark overlay -->
+    		<div class="overlay"></div>
+
+			<!-- Content -->
+			<div class="content">
+			
+				<!-- open sidebar menu -->
+				<a class="btn btn-primary btn-customized open-menu" href="#" role="button">
+                    <i class="fas fa-align-left"></i> <span>Menu</span>
+                </a>
+
+		        <!-- Top content -->
+		        <div class="top-content section-container" id="top-content">
+			        <div class="container">
+			            <div class="row">
+                            <div class="col-md-3 section-5-box banner-logo">
+                                <img alt="Logo" src="../_static/pypreclin.png">
+                            </div>
+			                <div class="col-md-7 section-5-box">
+			                	<h1 class="wow fadeIn">    <p>Python processing for PreClinical data.</p></h1>
+			                </div>
+			            </div>
+			        </div>
+		        </div>
+                    
+                    <div class="document">
+                        <div class="section" id="pypreclin-preprocessing">
+<span id="sphx-glr-auto-gallery-preproc-py"></span><h1>pypreclin preprocessing<a class="headerlink" href="#pypreclin-preprocessing" title="Permalink to this headline">¶</a></h1><div class='divider-1 wow fadeInUp'><span></span></div>
+<p>Credit: A Grigis &amp; J Tasserie</p>
+<p>The preprocessing and analysis of nonhuman primate (NHP) magnetic resonance
+imaging (MRI) data presents some unique challenges.</p>
+<ol class="arabic simple">
+<li>non standard orientation, sphinx position.</li>
+<li>strong intensity bias.</li>
+<li>non brain tissues.</li>
+</ol>
+<p>Over the years, we have created our own custom solution that solves these
+problems.</p>
+<p>This example shows how to preprocess a functional timeserie without
+fielmap or reverse phase encoded images. One can inpsect the called function to
+apply only a single step.</p>
+<div class="section" id="first-checks">
+<h2>First checks<a class="headerlink" href="#first-checks" title="Permalink to this headline">¶</a><i class='fas fa-angle-right'></i></h2>
+<p>In order to test if the &#8216;pypreclin&#8217; package is installed on your machine, you
+can try to import it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pypreclin.workflow.preproc_fmri</span> <span class="kn">import</span> <span class="n">preproc</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="load-a-test-dataset">
+<h2>Load a test dataset<a class="headerlink" href="#load-a-test-dataset" title="Permalink to this headline">¶</a><i class='fas fa-angle-right'></i></h2>
+<p>Now load a toy single run dataset with 10 volumes (it will be faster).
+We assume here that in your current working directory you have a functional
+data &#8216;func.nii&#8217;, a structural data &#8216;anat.nii&#8217; and a template
+&#8216;mni-resampled_1by1by1.nii&#8217;.</p>
+<p>Note: pypreclin needs external softwares. If you want to install them from
+your terminal on an Ubuntu computer you can run the following commands:</p>
+<p>sudo apt install fsl-5.0-complete ants -y
+sudo ln -s /usr/lib/ants/N4BiasFieldCorrection /usr/bin
+wget <a class="reference external" href="https://www.nitrc.org/frs/download.php/7446/jip-Linux-x86_64.tar.gz">https://www.nitrc.org/frs/download.php/7446/jip-Linux-x86_64.tar.gz</a>
+tar xvzf jip-Linux-x86_64.tar.gz
+rm jip-Linux-x86_64.tar.gz</p>
+<p>In order to avoid the installation
+of all dependencies, please use the provided container.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rootdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">funcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;func.nii&quot;</span><span class="p">)</span>
+<span class="n">anatfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;anat.nii&quot;</span><span class="p">)</span>
+<span class="n">template</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;mni-resampled_1by1by1.nii&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="n">funcfile</span><span class="p">,</span> <span class="n">anatfile</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must specify the input data &#39;{0}&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="mf">2.4</span>
+<span class="n">outdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">outdir</span><span class="p">)</span>
+<span class="n">jipdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rootdir</span><span class="p">,</span> <span class="s2">&quot;jip-Linux-x86_64&quot;</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">jipdir</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Download JIP binaries before starting.&quot;</span><span class="p">)</span>
+<span class="n">fslconf</span> <span class="o">=</span> <span class="s2">&quot;/etc/fsl/fsl.sh&quot;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fslconf</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Install FSL before starting.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run">
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a><i class='fas fa-angle-right'></i></h2>
+<p>Finally run all the prepocessing steps.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="n">preproc</span><span class="p">(</span>
+        <span class="n">funcfile</span><span class="o">=</span><span class="n">funcfile</span><span class="p">,</span>
+        <span class="n">anatfile</span><span class="o">=</span><span class="n">anatfile</span><span class="p">,</span>
+        <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
+        <span class="n">outdir</span><span class="o">=</span><span class="n">outdir</span><span class="p">,</span>
+        <span class="n">repetitiontime</span><span class="o">=</span><span class="n">tr</span><span class="p">,</span>
+        <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+        <span class="n">jipdir</span><span class="o">=</span><span class="n">jipdir</span><span class="p">,</span>
+        <span class="n">erase</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">resample</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">interleaved</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">sliceorder</span><span class="o">=</span><span class="s2">&quot;ascending&quot;</span><span class="p">,</span>
+        <span class="n">realign_dof</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">realign_to_vol</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">warp</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">warp_njobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">warp_index</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">warp_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">warp_restrict</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">delta_te</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">dwell_time</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">manufacturer</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">blip_files</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">blip_enc_dirs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">unwarp_direction</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">phase_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">magnitude_file</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">anatorient</span><span class="o">=</span><span class="s2">&quot;RIA&quot;</span><span class="p">,</span>
+        <span class="n">funcorient</span><span class="o">=</span><span class="s2">&quot;RIA&quot;</span><span class="p">,</span>
+        <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">fslconfig</span><span class="o">=</span><span class="n">fslconf</span><span class="p">,</span>
+        <span class="n">normalization_trf</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">coregistration_trf</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+        <span class="n">recon1</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">recon2</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">auto</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer container">
+<div class="sphx-glr-download container">
+<a class="reference download internal" href="../_downloads/preproc.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">preproc.py</span></code></a></div>
+<div class="sphx-glr-download container">
+<a class="reference download internal" href="../_downloads/preproc.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">preproc.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature">Gallery generated by Sphinx-Gallery</p>
+</div>
+</div>
+
+                    </div>
+                <div class="spacer"></div>
+		        
+		        <!-- Footer -->
+		        <div class="section-6-container section-container section-container-image-bg" id="section-6">
+			        <div class="container">
+			            <div class="row">
+		                    <div class="col-md-5 offset-md-1 section-6-box wow fadeInDown">
+		                    	<h3>Follow us</h3>
+		                    	<div class="section-6-social">
+			                    	<a href="https://www.facebook.com/pages/NeuroSpin/171075046414933"><i class="fab fa-facebook-f"></i></a>
+									<a href="https://www.youtube.com/CEASaclay"><i class="fab fa-youtube"></i></a>
+									<a href="https://twitter.com/neurospin_91"><i class="fab fa-twitter"></i></a>
+									<a href="https://github.com/AGrigis/pysphinxdoc"><i class="fab fa-github"></i></a>
+		                    	</div>
+		                    </div>
+			            </div>
+			        	<div class="row">
+		                    <div class="col">
+                                &copy; 2020, 
+Antoine Grigis <antoine.grigis@cea.fr>
+Jordy Tasserie <jordy.tasserie@cea.fr>
+Bechir Jarraya <bechir.jarraya@cea.fr>
+ <antoine.grigis@cea.fr>. <br/>
+                                Inspired by <a href="https://azmind.com/demo/bootstrap-4-sidebar-menu/">AZMIND template</a>.
+		                    </div>
+		                </div>
+			        </div>
+                </div>
+	        
+	        </div>
+	        <!-- End content -->
+        
+        </div>
+        <!-- End wrapper -->
+
+        <!-- Javascript -->
+		<script src="../_static/js/jquery-3.3.1.min.js"></script>
+		<script src="../_static/js/jquery-migrate-3.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="../_static/js/jquery.backstretch.min.js"></script>
+        <script src="../_static/js/wow.min.js"></script>
+        <script src="../_static/js/jquery.waypoints.min.js"></script>
+        <script src="../_static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="../_static/js/scripts.js"></script>
+        <script src="../_static/js/jquery.mosaic.js"></script>
+        <script type="text/javascript">
+	        $('.top-content').backstretch("../_static/img/backgrounds/1.jpg");
+            $('.section-4-container').backstretch("../_static/img/backgrounds/2.jpg");
+            $('.section-6-container').backstretch("../_static/img/backgrounds/1.jpg");
+        </script>
+
+    </body>
+
+</html>
