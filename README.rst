@@ -114,7 +114,7 @@ data 'func.nii', a structural data 'anat.nii' and a template
 	    -NA RIA \
 	    -NF RIA \
 	    -C /etc/fsl/5.0/fsl.sh \
-	    -j /i2bm/local/jip-Linux-x86_64/bi
+	    -j /i2bm/local/jip-Linux-x86_64/bin
 
 
 
