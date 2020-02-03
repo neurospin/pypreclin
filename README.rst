@@ -56,7 +56,7 @@ data 'func.nii', a structural data 'anat.nii' and a template
 'mni-resampled_1by1by1.nii'. 
 ::
 
-	sudo apt install fsl-5.0-complete ants -y
+	sudo apt install fsl-5.0-complete ants virtualenv -y
 	sudo ln -s /usr/lib/ants/N4BiasFieldCorrection /usr/bin
 	wget https://www.nitrc.org/frs/download.php/7446/jip-Linux-x86_64.tar.gz
 	tar xvzf jip-Linux-x86_64.tar.gz 
