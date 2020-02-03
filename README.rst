@@ -63,7 +63,7 @@ data 'func.nii', a structural data 'anat.nii' and a template
 	rm jip-Linux-x86_64.tar.gz
 	virtualenv -p /usr/bin/python3.5 ./env
 	. env/bin/activate
-	pip install pypreclin
+	pip install --no-cache-dir pypreclin
 	python env/bin/pypreclin_preproc_fmri -h
 	mkdir outputs
 	python env/bin/pypreclin_preproc_fmri \
