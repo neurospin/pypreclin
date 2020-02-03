@@ -96,6 +96,8 @@ Example: we assume that in the '/volatile/pypreclin' direcctory you have a funct
 data 'func.nii', a structural data 'anat.nii' and a template
 'mni-resampled_1by1by1.nii'.
 
+Warning: no X11, you need to provide the align.com files.
+
 ::
 
 	wget http://biodev.cea.fr/pypreclin/pypreclin-ubuntu.simg
@@ -113,6 +115,8 @@ data 'func.nii', a structural data 'anat.nii' and a template
 	    -t /volatile/pypreclin/mni-resampled_1by1by1.nii \
 	    -NA RIA \
 	    -NF RIA \
+	    -N normalize/align.com \
+	    -M coreg/align.com \
 	    -C /etc/fsl/5.0/fsl.sh \
 	    -j /i2bm/local/jip-Linux-x86_64/bin
 
